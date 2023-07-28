@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recommender System Evaluation</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div>
+    {{ plot|safe }}
+    </div>
+    <form action="/" method="get">
+        <input type="checkbox" name="model" value="svd" id="svd" checked>
+        <label for="svd">SVD</label>
+        <br>
+        <input type="checkbox" name="model" value="knn" id="knn" checked>
+        <label for="knn">K-Nearest Neighbours</label>
+        <br>
+        <input type="checkbox" name="model" value="baseline" id="baseline" checked>
+        <label for="baseline">Baseline</label>
+        <br>
+        <input type="checkbox" name="model" value="slope_one" id="slope_one" checked>
+        <label for="slope_one">Slope One</label>
+        <br>
+        <input type="checkbox" name="model" value="co_clustering" id="co_clustering" checked>
+        <label for="co_clustering">CoClustering</label>
+        <br>
+        <input type="submit" value="Evaluate">
+    </form>
+</body>
+</html>
