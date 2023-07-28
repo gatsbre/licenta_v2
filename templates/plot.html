@@ -6,23 +6,24 @@
 </head>
 <body>
     <div>
-    {{ plot|safe }}
-    </div>
+    {{ mae_plot|safe }}
+    {{ rmse_plot|safe }}
+</div>
     <form action="/" method="get">
-        <input type="checkbox" name="model" value="svd" id="svd" checked>
-        <label for="svd">SVD</label>
+        <input type="checkbox" name="model" value="SVD" id="SVD" checked>
+        <label for="SVD">SVD</label>
         <br>
-        <input type="checkbox" name="model" value="knn" id="knn" checked>
-        <label for="knn">K-Nearest Neighbours</label>
+        <input type="checkbox" name="model" value="KNN" id="KNN" checked>
+        <label for="KNN">K-Nearest Neighbours</label>
         <br>
-        <input type="checkbox" name="model" value="baseline" id="baseline" checked>
+        <input type="checkbox" name="model" value="Baseline" id="Baseline" checked>
         <label for="baseline">Baseline</label>
         <br>
-        <input type="checkbox" name="model" value="slope_one" id="slope_one" checked>
-        <label for="slope_one">Slope One</label>
+        <input type="checkbox" name="model" value="SlopeOne" id="Slope One" checked>
+        <label for="Slope One">Slope One</label>
         <br>
-        <input type="checkbox" name="model" value="co_clustering" id="co_clustering" checked>
-        <label for="co_clustering">CoClustering</label>
+        <input type="checkbox" name="model" value="CoClustering" id="CoClustering" checked>
+        <label for="CoClustering">CoClustering</label>
         <br>
         <input type="submit" value="Evaluate">
     </form>
