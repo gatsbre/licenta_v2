@@ -1,4 +1,4 @@
-def precision_score(test_set, predictions, k):
+def precision_score(test_set, predictions, k=10):
     set_of_users = {user[0] for user in test_set}
     total_precision = 0
 
@@ -13,7 +13,7 @@ def precision_score(test_set, predictions, k):
 
     return total_precision / len(set_of_users)
 
-def recall_score(test_set, predictions, k):
+def recall_score(test_set, predictions, k=10):
     set_of_users = {user[0] for user in test_set}
     total_recall = 0
 
@@ -31,7 +31,7 @@ def recall_score(test_set, predictions, k):
 
     return total_recall / len(set_of_users)
 
-def f1_score(test_set, predictions, k):
+def f1_score(test_set, predictions, k=10):
     precision = precision_score(test_set, predictions, k)
     recall = recall_score(test_set, predictions, k)
     
@@ -41,3 +41,14 @@ def f1_score(test_set, predictions, k):
         f1 = 2 * (precision * recall) / (precision + recall)
     
     return f1
+
+def precision_recall_f1(test_set, predictions, k=10):
+    precision = precision_score(test_set, predictions, k)
+    recall = recall_score(test_set, predictions, k)
+    
+    if precision + recall == 0:
+        f1 = 0
+    else:
+        f1 = 2 * (precision * recall) / (precision + recall)
+    
+    return precision, recall, f1
