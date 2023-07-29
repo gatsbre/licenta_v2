@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recommender System Evaluation</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <form id="evaluationForm" action="/mae_rmse" method="get">
+
+        <input type="checkbox" name="model" value="SVD" id="SVD">
+        <label for="SVD">SVD</label>
+        
+        <input type="checkbox" name="model" value="KNN" id="KNN">
+        <label for="KNN">K-Nearest Neighbours</label>
+
+        <input type="checkbox" name="model" value="Baseline" id="Baseline">
+        <label for="baseline">Baseline</label>
+
+        <input type="checkbox" name="model" value="SlopeOne" id="Slope One">
+        <label for="Slope One">Slope One</label>
+
+        <input type="checkbox" name="model" value="CoClustering" id="CoClustering">
+        <label for="CoClustering">CoClustering</label>
+
+        <input type="checkbox" id="selectAll">
+        <label for="selectAll">Select All</label>
+
+        <input type="submit" value="Evaluate">
+    </form>
+    <div>
+    {{ mae_plot | safe }}
+    {{ rmse_plot | safe }}
+    {{ time_plot | safe}}
+</div>
+
+<script>
+
+    document.getElementById("selectAll").addEventListener("change", function() {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][name="model"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = this.checked;
+        }
+    });
+</script>
+</body>
+</html>
