@@ -46,3 +46,12 @@ def get_precision_recall_f1_score_bars(model_name):
     f1_bar = go.Bar(name=f'{model_name}', x=['F1'], y=[f1_score], width=bar_width, text=[f'{model_name} <br> F1: {round(f1_score, 6)}s'], textposition='inside',insidetextanchor='middle', hoverinfo='text', hovertext=f'Model: {model_name} <br>F1: {round(f1_score, 6)}s')
     
     return precision_bar, recall_bar, f1_bar
+
+def get_top_k_percent(sorted_list, k):
+    if not (0 <= k <= 100):
+        raise ValueError("K should be a value between 0 and 100 (inclusive).")
+
+    k_percent_index = int(len(sorted_list) * (k / 100))
+    top_k_percent = sorted_list[:k_percent_index]
+
+    return top_k_percent

@@ -15,6 +15,7 @@ data = Dataset.load_builtin('ml-100k')
 reader = Reader(rating_scale=(1, 5))
 
 train_data, test_data = train_test_split(data, train_size=0.8)
+print(len(test_data))
 legal_models = ['SVD', 'KNN', 'Baseline', 'SlopeOne', 'CoClustering']
 
 @app.route('/')
@@ -87,8 +88,8 @@ def get_mae_rmse_model(model_name):
 
     return jsonify(rmse_score, mae_score, end_time-start_time)
 
-@app.route('/api/v1/precision_recall_f1/<model_name>', methods=['GET'])
-def get_recall_precision_f1_model_k(model_name):
+@app.route('/api/v1/precision_recall_f1/<model_name>/<k>', methods=['GET'])
+def get_recall_precision_f1_model_k(model_name, k):
     
     model = utils.get_model_instance(model_name)
     
@@ -96,7 +97,9 @@ def get_recall_precision_f1_model_k(model_name):
     
     predictions = model.test(test_data)
     
-    precision_score, recall_score, f1_score = eval_func.precision_recall_f1(test_data, predictions)
+    k = int(k)
+    
+    precision_score, recall_score, f1_score = eval_func.precision_recall_f1(test_data, predictions, k)
     
     return jsonify(precision_score, recall_score, f1_score)
 
