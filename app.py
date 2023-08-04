@@ -12,8 +12,6 @@ import pandas as pd
 app = Flask(__name__)
 
 # Load the dataset
-legal_models = ["SVD", "KNN", "Baseline", "SlopeOne", "CoClustering"]
-
 @app.route("/")
 def show_main():
     return render_template("main.html")
@@ -54,6 +52,11 @@ def show_mae_rmse_graph():
 @app.route("/robustness")
 def show_robustness_graph():
     selected_models = utils.get_models()
+    
+    return render_template(
+        "robustness.html"
+    )
+    
 
 
 @app.route("/precision_recall_f1")

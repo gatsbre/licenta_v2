@@ -9,20 +9,20 @@
 <body>
     <form id="evaluationForm" action="/robustness" method="get">
 
-        <input type="checkbox" name="model" value="SVD" id="SVD">
-        <label for="SVD">SVD</label>
+        <input type="checkbox" name="model" value="svd" id="svd">
+        <label for="svd">SVD</label>
 
-        <input type="checkbox" name="model" value="KNN" id="KNN">
-        <label for="KNN">K-Nearest Neighbours</label>
+        <input type="checkbox" name="model" value="knn" id="knn">
+        <label for="knn">K-Nearest Neighbours</label>
 
-        <input type="checkbox" name="model" value="Baseline" id="Baseline">
+        <input type="checkbox" name="model" value="baseline" id="baseline">
         <label for="baseline">Baseline</label>
 
-        <input type="checkbox" name="model" value="SlopeOne" id="Slope One">
-        <label for="Slope One">Slope One</label>
+        <input type="checkbox" name="model" value="slope_one" id="slope_one">
+        <label for="slope_one">Slope One</label>
 
-        <input type="checkbox" name="model" value="CoClustering" id="CoClustering">
-        <label for="CoClustering">CoClustering</label>
+        <input type="checkbox" name="model" value="co_clustering" id="co_clustering">
+        <label for="co_clustering">CoClustering</label>
 
         <input type="checkbox" id="selectAll">
         <label for="selectAll">Select All</label>
@@ -30,12 +30,19 @@
         <input type="number" id="k" name="k" min="10" , max="100">
         <label for="k">K</label>
 
-        <input type="number" id="nrUsers" name="nrUsers" min="1" max="100">
-        <label for="nrUsers">Number of users</label>
+        <input type="number" id="nr_users" name="nr_users" min="1" max="100">
+        <label for="nr_users">Number of users</label>
 
         <input type="number" id="rating" name="rating" min="1" max="5">
         <label for="rating">Rating</label>
 
+
+        <input type="radio" id="mae_rmse" name="evaluation_method" checked>
+        <label for="mae_rmse">MAE, RMSE</label>
+    
+        <input type="radio" id="precision_recall_f1" name="evaluation_method">
+        <label for="precision_recall_f1">Precision, Recall, F1</label>
+        
         <input type="submit" value="Evaluate">
     </form>
     <div>

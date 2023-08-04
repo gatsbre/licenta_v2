@@ -9,11 +9,11 @@ from flask import request
 
 def get_model_instance(model_name):
     model_factories = {
-        "SVD": lambda: SVD(),
-        "KNN": lambda: KNNBasic(),
-        "Baseline": lambda: BaselineOnly(),
-        "SlopeOne": lambda: SlopeOne(),
-        "CoClustering": lambda: CoClustering(),
+        "svd": lambda: SVD(),
+        "knn": lambda: KNNBasic(),
+        "baseline": lambda: BaselineOnly(),
+        "slope_one": lambda: SlopeOne(),
+        "co_clustering": lambda: CoClustering(),
     }
 
     return model_factories[model_name]()
@@ -139,7 +139,7 @@ def get_top_k_percent(sorted_list, k):
     return top_k_percent
 
 def get_models():
-    legal_models = ["SVD", "KNN", "Baseline", "SlopeOne", "CoClustering"]
+    legal_models = ["svd", "knn", "baseline", "slope_one", "co_clustering"]
     
     potential_models = request.args.getlist("model")
 
