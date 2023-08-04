@@ -1,6 +1,10 @@
 import requests
 import plotly.graph_objects as go
 from surprise import SVD, KNNBasic, BaselineOnly, SlopeOne, CoClustering
+from surprise.model_selection import train_test_split
+from surprise import Dataset
+
+from flask import request
 
 
 def get_model_instance(model_name):
@@ -133,3 +137,25 @@ def get_top_k_percent(sorted_list, k):
     top_k_percent = sorted_list[:k_percent_index]
 
     return top_k_percent
+
+def get_models():
+    legal_models = ["SVD", "KNN", "Baseline", "SlopeOne", "CoClustering"]
+    
+    potential_models = request.args.getlist("model")
+
+    selected_models = set(potential_models) & set(legal_models)
+
+    if not selected_models:
+        selected_models = legal_models
+        
+    return selected_models
+
+def get_k_value():
+    k_value = request.args.get("k")
+
+    if not k_value:
+        k_value = 10
+    else:
+        k_value = int(k_value)
+        
+    return k_value
