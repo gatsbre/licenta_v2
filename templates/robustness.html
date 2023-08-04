@@ -37,17 +37,22 @@
         <label for="rating">Rating</label>
 
 
-        <input type="radio" id="mae_rmse" name="evaluation_method" checked>
+        <input type="radio" id="mae_rmse" name="comparision_method" value="mae_rmse">
         <label for="mae_rmse">MAE, RMSE</label>
     
-        <input type="radio" id="precision_recall_f1" name="evaluation_method">
+        <input type="radio" id="precision_recall_f1" name="comparision_method" value="precision_recall_f1">
         <label for="precision_recall_f1">Precision, Recall, F1</label>
-        
+
         <input type="submit" value="Evaluate">
     </form>
-    <div>
+ 
 
+    <div id="loading-spinner" style="display: none">
+        Loading...
     </div>
+
+    <div id="robustness-plot"></div>
+
 
     <script>
 
@@ -56,6 +61,21 @@
             for (var i = 0; i < checkboxes.length; i++) {
                 checkboxes[i].checked = this.checked;
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loading-spinner').style.display = 'block';
+
+            fetch('/robustness/get_plots')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading-spinner').style.display = 'none';
+
+                    Plotly.newPlot('robustness-plot', data.robustness_plot);
+                })
+                .catch(error => {
+                    console.error('Error fetching plot data:', error);
+                });
         });
     </script>
 </body>

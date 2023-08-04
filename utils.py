@@ -157,3 +157,13 @@ def get_k_value():
         k_value = int(k_value)
         
     return k_value
+
+def get_comparison_method():
+    legal_methods = ["mae_rmse", "precision_recall_f1"]
+
+    comparison_method = request.args.get("comparison_method")
+    
+    if comparison_method not in legal_methods:
+        comparison_method = legal_methods[0]
+
+    return comparison_method

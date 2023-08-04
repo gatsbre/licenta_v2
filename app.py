@@ -1,7 +1,6 @@
 from flask import Flask, render_template, jsonify
-import plotly.graph_objects as go
+from plotly import graph_objects as go
 import utils
-
 
 app = Flask(__name__)
 
@@ -9,7 +8,6 @@ app = Flask(__name__)
 @app.route("/")
 def show_main():
     return render_template("main.html")
-
 
 @app.route("/mae_rmse")
 def show_mae_rmse_graph():
@@ -23,7 +21,7 @@ def show_robustness_graph():
 def show_precision_f1_recall():
     return render_template("precision_recall_f1.html")
 
-@app.route("/get_mae_rmse_plots")
+@app.route("/mae_rmse/get_plots", methods=['GET'])
 def get_mae_rmse_plots():
     selected_models = utils.get_models()
 
@@ -56,7 +54,7 @@ def get_mae_rmse_plots():
         }
     )
 
-@app.route("/get_precision_recall_f1_plots")
+@app.route("/precision_recall_f1/get_plots", methods=['GET'])
 def get_precision_recall_f1_plots():
     selected_models = utils.get_models()
 
@@ -82,6 +80,30 @@ def get_precision_recall_f1_plots():
             "f1_plot": fig_f1.to_plotly_json(),
         }
     )
+    
+@app.route("/robustness/get_plots", methods=['GET'])
+def get_robustness_plots():
+    # selected_models = utils.get_models()
+    
+    # k_value = utils.get_k_value()
+    
+    # comparison_name = utils.get_comparison_method()
+    
+    # if comparison_name
+    
+    # robustness_plot = utils.get_plots(
+    #     selected_models, comparison_method, k_value
+    # )
+    
+    # fig_robustness = go.Figure(data=robustness_plot)
+    # fig_robustness.update_layout(title="Robustness", barmode='group')
+    
+    # return jsonify(
+    #     {
+    #         "robustness_plot": fig_robustness.to_plotly_json()
+    #     }
+    # )
+    ...
 
 
 if __name__ == "__main__":
