@@ -1,13 +1,7 @@
-from flask import Flask, render_template, request, jsonify
-from surprise import Dataset, Reader
-from surprise.model_selection import train_test_split
-from surprise.accuracy import rmse, mae
+from flask import Flask, render_template, jsonify
 import plotly.graph_objects as go
-
-import time
 import utils
-import eval_functions as eval_func
-import pandas as pd
+
 
 app = Flask(__name__)
 
@@ -19,6 +13,18 @@ def show_main():
 
 @app.route("/mae_rmse")
 def show_mae_rmse_graph():
+    return render_template("mae_rmse.html")
+
+@app.route("/robustness")
+def show_robustness_graph():
+    return render_template("robustness.html")
+
+@app.route("/precision_recall_f1")
+def show_precision_f1_recall():
+    return render_template("precision_recall_f1.html")
+
+@app.route("/get_mae_rmse_plots")
+def get_mae_rmse_plots():
     selected_models = utils.get_models()
 
     mae_to_plot, rmse_to_plot, time_to_plot = utils.get_plots(
@@ -42,25 +48,16 @@ def show_mae_rmse_graph():
         ),
     )
 
-    return render_template(
-        "mae_rmse.html",
-        mae_plot=fig_mae.to_html(),
-        rmse_plot=fig_rmse.to_html(),
-        time_plot=fig_time.to_html(),
+    return jsonify(
+        {
+            "mae_plot": fig_mae.to_plotly_json(),
+            "rmse_plot": fig_rmse.to_plotly_json(),
+            "time_plot": fig_time.to_plotly_json(),
+        }
     )
 
-@app.route("/robustness")
-def show_robustness_graph():
-    selected_models = utils.get_models()
-    
-    return render_template(
-        "robustness.html"
-    )
-    
-
-
-@app.route("/precision_recall_f1")
-def show_precision_f1_recall():
+@app.route("/get_precision_recall_f1_plots")
+def get_precision_recall_f1_plots():
     selected_models = utils.get_models()
 
     k_value = utils.get_k_value()
@@ -78,11 +75,12 @@ def show_precision_f1_recall():
     fig_f1 = go.Figure(data=f1_to_plot)
     fig_f1.update_layout(title="F1", barmode="group")
 
-    return render_template(
-        "precision_recall_f1.html",
-        precision_plot=fig_precision.to_html(),
-        recall_plot=fig_recall.to_html(),
-        f1_plot=fig_f1.to_html(),
+    return jsonify(
+        {
+            "precision_plot": fig_precision.to_plotly_json(),
+            "recall_plot": fig_recall.to_plotly_json(),
+            "f1_plot": fig_f1.to_plotly_json(),
+        }
     )
 
 

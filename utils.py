@@ -1,8 +1,6 @@
 import requests
 import plotly.graph_objects as go
 from surprise import SVD, KNNBasic, BaselineOnly, SlopeOne, CoClustering
-from surprise.model_selection import train_test_split
-from surprise import Dataset
 
 from flask import request
 

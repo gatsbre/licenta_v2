@@ -1,3 +1,4 @@
+<!-- mae_rmse.html -->
 <!DOCTYPE html>
 <html>
 
@@ -29,11 +30,14 @@
 
         <input type="submit" value="Evaluate">
     </form>
-    <div>
-        {{ mae_plot | safe }}
-        {{ rmse_plot | safe }}
-        {{ time_plot | safe}}
+
+    <div id="loading-spinner" style="display: none">
+        Loading...
     </div>
+
+    <div id="mae-plot"></div>
+    <div id="rmse-plot"></div>
+    <div id="time-plot"></div>
 
     <script>
 
@@ -42,6 +46,23 @@
             for (var i = 0; i < checkboxes.length; i++) {
                 checkboxes[i].checked = this.checked;
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loading-spinner').style.display = 'block';
+
+            fetch('/get_mae_rmse_plots')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading-spinner').style.display = 'none';
+
+                    Plotly.newPlot('mae-plot', data.mae_plot);
+                    Plotly.newPlot('rmse-plot', data.rmse_plot);
+                    Plotly.newPlot('time-plot', data.time_plot);
+                })
+                .catch(error => {
+                    console.error('Error fetching plot data:', error);
+                });
         });
     </script>
 </body>
