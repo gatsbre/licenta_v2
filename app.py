@@ -21,9 +21,9 @@ def show_robustness_graph():
 def show_precision_f1_recall():
     return render_template("precision_recall_f1.html")
 
-@app.route("/mae_rmse/get_plots", methods=['GET'])
-def get_mae_rmse_plots():
-    selected_models = utils.get_models()
+@app.route("/mae_rmse/get_plots/<models>", methods=['GET'])
+def get_mae_rmse_plots(models):
+    selected_models = models.split(',') # = utils.get_models()
 
     mae_to_plot, rmse_to_plot, time_to_plot = utils.get_plots(
         selected_models, utils.get_mae_rmse_score_bars
@@ -80,7 +80,7 @@ def get_precision_recall_f1_plots():
             "f1_plot": fig_f1.to_plotly_json(),
         }
     )
-    
+
 @app.route("/robustness/get_plots", methods=['GET'])
 def get_robustness_plots():
     # selected_models = utils.get_models()

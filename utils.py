@@ -140,17 +140,18 @@ def get_models():
     legal_models = ["svd", "knn", "baseline", "slope_one", "co_clustering"]
     
     potential_models = request.args.getlist("model")
+    print(potential_models)
 
     selected_models = set(potential_models) & set(legal_models)
 
     if not selected_models:
         selected_models = legal_models
-        
+    
     return selected_models
 
 def get_k_value():
     k_value = request.args.get("k")
-
+    print(k_value)
     if not k_value:
         k_value = 10
     else:
