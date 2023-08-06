@@ -23,7 +23,7 @@ def show_precision_f1_recall():
 
 @app.route("/mae_rmse/get_plots/<models>", methods=['GET'])
 def get_mae_rmse_plots(models):
-    selected_models = models.split(',') # = utils.get_models()
+    selected_models = models.split(',')
 
     mae_to_plot, rmse_to_plot, time_to_plot = utils.get_plots(
         selected_models, utils.get_mae_rmse_score_bars

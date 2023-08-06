@@ -35,41 +35,79 @@
         Loading...
     </div>
 
+    <div id="plots" style="display:block">
     <div id="mae-plot"></div>
     <div id="rmse-plot"></div>
     <div id="time-plot"></div>
+        </div>
+
 
     <script>
-
-        document.getElementById("selectAll").addEventListener("change", function () {
-            var checkboxes = document.querySelectorAll('input[type="checkbox"][name="model"]');
-            for (var i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].checked = this.checked;
+          const fetchModels = async () => {
+            try {
+              const modelsInPage = [...document.getElementsByName("model")];
+              const filteredModelsInPage = (() => {
+                if (modelsInPage.every((input) => !input.checked)) {
+                  return modelsInPage.map((input) => input.value)
+                }
+                return modelsInPage
+                  .filter((input) => !!input.checked)
+                  .map((input) => input.value);
+              })();
+              const response = await (async () => {
+                if (!filteredModelsInPage.length) {
+                  return await fetch("/mae_rmse/get_plots");
+                }
+                return await fetch(
+                  `/mae_rmse/get_plots/${filteredModelsInPage.join(",")}`
+                );
+              })();
+              const data = await response.json();
+              return data;
+            } catch (error) {
+              console.error("Error fetching plot data:", error);
+              return null;
             }
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('loading-spinner').style.display = 'block';
-            var models = document.getElementsByName(model);
-            fetch('/mae_rmse/get_plots')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('loading-spinner').style.display = 'none';
-
-                    Plotly.newPlot('mae-plot', data.mae_plot);
-                    Plotly.newPlot('rmse-plot', data.rmse_plot);
-                    Plotly.newPlot('time-plot', data.time_plot);
-                })
-                .catch(error => {
-                    console.error('Error fetching plot data:', error);
-                });
-        });
-        
-        document.getElementById("evaluate_button").addEventListener("click", function () {
-
+          };
+    
+          document.getElementById("selectAll").addEventListener("change", (event) => {
+            const checkboxes = document.querySelectorAll(
+              'input[type="checkbox"][name="model"]'
+            );
+            for (let i = 0; i < checkboxes.length; i++) {
+              checkboxes[i].checked = event.target.checked;
+            }
+          });
+    
+          const plotModels = async () => {
+            document.getElementById("loading-spinner").style.display = "block";
+            document.getElementById("plots").style.display = "none";
             
-        });
-    </script>
+            const data = await fetchModels();
+            
+            
+            document.getElementById("loading-spinner").style.display = "none";
+            document.getElementById("plots").style.display = "initial";
+            
+            if (!data) return;
+    
+            Plotly.newPlot("mae-plot", data.mae_plot);
+            Plotly.newPlot("rmse-plot", data.rmse_plot);
+            Plotly.newPlot("time-plot", data.time_plot);
+          };
+    
+          window.addEventListener("load", async () => {
+            await plotModels();
+          });
+    
+          document
+            .getElementById("evaluate_button")
+            .addEventListener("click", async (event) => {
+                event.preventDefault();
+              await plotModels();
+            });
+        </script>
+
 </body>
 
 </html>
