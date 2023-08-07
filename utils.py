@@ -1,7 +1,7 @@
 import requests
 import plotly.graph_objects as go
 from surprise import SVD, KNNBasic, BaselineOnly, SlopeOne, CoClustering
-
+import random
 from flask import request
 
 
@@ -19,10 +19,11 @@ def get_model_instance(model_name):
 
 def get_plots(selected_models, function, k=0):
     plots = []
-
+    random_state_value = random.randint(0, 2**32 - 1)
+    
     if k:
         for model_name in selected_models:
-            for i, score_bar in enumerate(function(model_name, k)):
+            for i, score_bar in enumerate(function(model_name,random_state_value, k)):
                 try:
                     if not plots[i]:
                         plots[i] = []
@@ -31,7 +32,7 @@ def get_plots(selected_models, function, k=0):
                 plots[i].append(score_bar)
     else:
         for model_name in selected_models:
-            for i, score_bar in enumerate(function(model_name)):
+            for i, score_bar in enumerate(function(model_name, random_state_value)):
                 try:
                     if not plots[i]:
                         plots[i] = []
@@ -42,10 +43,10 @@ def get_plots(selected_models, function, k=0):
     return plots
 
 
-def get_mae_rmse_score_bars(model_name):
+def get_mae_rmse_score_bars(model_name, random_state_value):
     bar_width = 0.1
     rmse_score, mae_score, elapsed_time = requests.get(
-        f"http://127.0.0.1:8000/api/v1/mae_rmse/{model_name}"
+        f"http://127.0.0.1:8000/api/v1/mae_rmse/{model_name}/{random_state_value}"
     ).json()
 
     mae_bar = go.Bar(
@@ -84,10 +85,10 @@ def get_mae_rmse_score_bars(model_name):
     return mae_bar, rmse_bar, time_bar
 
 
-def get_precision_recall_f1_score_bars(model_name, k):
+def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
     bar_width = 0.1
     precision_score, recall_score, f1_score = requests.get(
-        f"http://127.0.0.1:8000/api/v1/precision_recall_f1/{model_name}/{k}"
+        f"http://127.0.0.1:8000/api/v1/precision_recall_f1/{model_name}/{random_state_value}/{k}"
     ).json()
 
     precision_bar = go.Bar(
