@@ -28,7 +28,7 @@ def get_mae_rmse_model(model_name, random_state_value):
     return jsonify(rmse_score, mae_score, end_time - start_time)
 
 
-@app.route("/api/v1/precision_recall_f1/<model_name>/<int:random_state_value>/<k>", methods=["GET"])
+@app.route("/api/v1/precision_recall_f1/<model_name>/<int:random_state_value>/<int:k>", methods=["GET"])
 def get_recall_precision_f1_model_k(model_name, random_state_value, k):
     data = Dataset.load_builtin("ml-100k")
     
@@ -39,8 +39,6 @@ def get_recall_precision_f1_model_k(model_name, random_state_value, k):
     model.fit(train_data)
 
     predictions = model.test(test_data)
-
-    k = int(k)
 
     precision_score, recall_score, f1_score = eval_func.precision_recall_f1(
         test_data, predictions, k

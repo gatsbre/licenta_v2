@@ -4,26 +4,31 @@ import utils
 
 app = Flask(__name__)
 
+
 # Load the dataset
 @app.route("/")
 def show_main():
     return render_template("main.html")
 
+
 @app.route("/mae_rmse")
 def show_mae_rmse_graph():
     return render_template("mae_rmse.html")
+
 
 @app.route("/robustness")
 def show_robustness_graph():
     return render_template("robustness.html")
 
+
 @app.route("/precision_recall_f1")
 def show_precision_f1_recall():
     return render_template("precision_recall_f1.html")
 
-@app.route("/mae_rmse/get_plots/<models>", methods=['GET'])
+
+@app.route("/mae_rmse/get_plots/<models>", methods=["GET"])
 def get_mae_rmse_plots(models):
-    selected_models = models.split(',')
+    selected_models = models.split(",")
 
     mae_to_plot, rmse_to_plot, time_to_plot = utils.get_plots(
         selected_models, utils.get_mae_rmse_score_bars
@@ -54,11 +59,15 @@ def get_mae_rmse_plots(models):
         }
     )
 
-@app.route("/precision_recall_f1/get_plots", methods=['GET'])
-def get_precision_recall_f1_plots():
-    selected_models = utils.get_models()
 
-    k_value = utils.get_k_value()
+@app.route("/precision_recall_f1/get_plots/<k_value>/<models>/", methods=["GET"])
+def get_precision_recall_f1_plots(models, k_value ):
+    selected_models = models.split(",")
+
+    if not k_value:
+        k_value = 10
+    else:
+        k_value = int(k_value)
 
     precision_to_plot, recall_to_plot, f1_to_plot = utils.get_plots(
         selected_models, utils.get_precision_recall_f1_score_bars, k_value
@@ -81,23 +90,24 @@ def get_precision_recall_f1_plots():
         }
     )
 
-@app.route("/robustness/get_plots", methods=['GET'])
+
+@app.route("/robustness/get_plots", methods=["GET"])
 def get_robustness_plots():
     # selected_models = utils.get_models()
-    
+
     # k_value = utils.get_k_value()
-    
+
     # comparison_name = utils.get_comparison_method()
-    
+
     # if comparison_name
-    
+
     # robustness_plot = utils.get_plots(
     #     selected_models, comparison_method, k_value
     # )
-    
+
     # fig_robustness = go.Figure(data=robustness_plot)
     # fig_robustness.update_layout(title="Robustness", barmode='group')
-    
+
     # return jsonify(
     #     {
     #         "robustness_plot": fig_robustness.to_plotly_json()
