@@ -38,77 +38,77 @@
     </div>
 
     <div id="plots" style="display:block">
-    <div id="precision-plot"></div>
-    <div id="recall-plot"></div>
-    <div id="f1-plot"></div>
-        </div>
+        <div id="precision-plot"></div>
+        <div id="recall-plot"></div>
+        <div id="f1-plot"></div>
+    </div>
 
     <script>
         const fetchModels = async () => {
-          try {
-            const modelsInPage = [...document.getElementsByName("model")];
-            const kValue = document.getElementById("k").value
-            const filteredModelsInPage = (() => {
-              if (modelsInPage.every((input) => !input.checked)) {
-                return modelsInPage.map((input) => input.value)
-              }
-              return modelsInPage
-                .filter((input) => !!input.checked)
-                .map((input) => input.value);
-            })();
-            const response = await (async () => {
-              if (!filteredModelsInPage.length) {
-                return await fetch(`/precision_recall_f1/get_plots/${kValue}`);
-              }
-              return await fetch(
-                `/precision_recall_f1/get_plots/${kValue}/${filteredModelsInPage.join(",")}`
-              );
-            })();
-            const data = await response.json();
-            return data;
-          } catch (error) {
-            console.error("Error fetching plot data:", error);
-            return null;
-          }
+            try {
+                const modelsInPage = [...document.getElementsByName("model")];
+                const kValue = document.getElementById("k").value
+                const filteredModelsInPage = (() => {
+                    if (modelsInPage.every((input) => !input.checked)) {
+                        return modelsInPage.map((input) => input.value)
+                    }
+                    return modelsInPage
+                        .filter((input) => !!input.checked)
+                        .map((input) => input.value);
+                })();
+                const response = await (async () => {
+                    if (!filteredModelsInPage.length) {
+                        return await fetch(`/precision_recall_f1/get_plots/${kValue}`);
+                    }
+                    return await fetch(
+                        `/precision_recall_f1/get_plots/${kValue}/${filteredModelsInPage.join(",")}`
+                    );
+                })();
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching plot data:", error);
+                return null;
+            }
         };
-  
+
         document.getElementById("selectAll").addEventListener("change", (event) => {
-          const checkboxes = document.querySelectorAll(
-            'input[type="checkbox"][name="model"]'
-          );
-          for (let i = 0; i < checkboxes.length; i++) {
-            checkboxes[i].checked = event.target.checked;
-          }
+            const checkboxes = document.querySelectorAll(
+                'input[type="checkbox"][name="model"]'
+            );
+            for (let i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = event.target.checked;
+            }
         });
-  
+
         const plotModels = async () => {
-          document.getElementById("loading-spinner").style.display = "block";
-          document.getElementById("plots").style.display = "none";
-          
-          const data = await fetchModels();
-          
-          
-          document.getElementById("loading-spinner").style.display = "none";
-          document.getElementById("plots").style.display = "initial";
-          
-          if (!data) return;
-  
-          Plotly.newPlot("precision-plot", data.precision_plot);
-          Plotly.newPlot("recall-plot", data.recall_plot);
-          Plotly.newPlot("f1-plot", data.f1_plot);
+            document.getElementById("loading-spinner").style.display = "block";
+            document.getElementById("plots").style.display = "none";
+
+            const data = await fetchModels();
+
+
+            document.getElementById("loading-spinner").style.display = "none";
+            document.getElementById("plots").style.display = "initial";
+
+            if (!data) return;
+
+            Plotly.newPlot("precision-plot", data.precision_plot);
+            Plotly.newPlot("recall-plot", data.recall_plot);
+            Plotly.newPlot("f1-plot", data.f1_plot);
         };
-  
+
         window.addEventListener("load", async () => {
-          await plotModels();
-        });
-  
-        document
-          .getElementById("evaluate_button")
-          .addEventListener("click", async (event) => {
-              event.preventDefault();
             await plotModels();
-          });
-      </script>
+        });
+
+        document
+            .getElementById("evaluate_button")
+            .addEventListener("click", async (event) => {
+                event.preventDefault();
+                await plotModels();
+            });
+    </script>
 </body>
 
 </html>

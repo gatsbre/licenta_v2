@@ -3,110 +3,110 @@
 <html>
 
 <head>
-    <title>RSE: MAE, RMSE</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <title>RSE: MAE, RMSE</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
 <body>
-    <form id="evaluationForm" action="/mae_rmse" method="get">
+  <form id="evaluationForm" action="/mae_rmse" method="get">
 
-        <input type="checkbox" name="model" value="svd" id="model">
-        <label for="svd">SVD</label>
+    <input type="checkbox" name="model" value="svd" id="model">
+    <label for="svd">SVD</label>
 
-        <input type="checkbox" name="model" value="knn" id="model">
-        <label for="knn">K-Nearest Neighbours</label>
+    <input type="checkbox" name="model" value="knn" id="model">
+    <label for="knn">K-Nearest Neighbours</label>
 
-        <input type="checkbox" name="model" value="baseline" id="model">
-        <label for="baseline">Baseline</label>
+    <input type="checkbox" name="model" value="baseline" id="model">
+    <label for="baseline">Baseline</label>
 
-        <input type="checkbox" name="model" value="slope_one" id="model">
-        <label for="slope_one">Slope One</label>
+    <input type="checkbox" name="model" value="slope_one" id="model">
+    <label for="slope_one">Slope One</label>
 
-        <input type="checkbox" name="model" value="co_clustering" id="model">
-        <label for="co_clustering">CoClustering</label>
+    <input type="checkbox" name="model" value="co_clustering" id="model">
+    <label for="co_clustering">CoClustering</label>
 
-        <input type="checkbox" id="selectAll">
-        <label for="selectAll">Select All</label>
+    <input type="checkbox" id="selectAll">
+    <label for="selectAll">Select All</label>
 
-        <input type="submit" value="Evaluate" id="evaluate_button">
-    </form>
+    <input type="submit" value="Evaluate" id="evaluate_button">
+  </form>
 
-    <div id="loading-spinner" style="display: none">
-        Loading...
-    </div>
+  <div id="loading-spinner" style="display: none">
+    Loading...
+  </div>
 
-    <div id="plots" style="display:block">
+  <div id="plots" style="display:block">
     <div id="mae-plot"></div>
     <div id="rmse-plot"></div>
     <div id="time-plot"></div>
-        </div>
+  </div>
 
 
-    <script>
-          const fetchModels = async () => {
-            try {
-              const modelsInPage = [...document.getElementsByName("model")];
-              const filteredModelsInPage = (() => {
-                if (modelsInPage.every((input) => !input.checked)) {
-                  return modelsInPage.map((input) => input.value)
-                }
-                return modelsInPage
-                  .filter((input) => !!input.checked)
-                  .map((input) => input.value);
-              })();
-              const response = await (async () => {
-                if (!filteredModelsInPage.length) {
-                  return await fetch("/mae_rmse/get_plots");
-                }
-                return await fetch(
-                  `/mae_rmse/get_plots/${filteredModelsInPage.join(",")}`
-                );
-              })();
-              const data = await response.json();
-              return data;
-            } catch (error) {
-              console.error("Error fetching plot data:", error);
-              return null;
-            }
-          };
-    
-          document.getElementById("selectAll").addEventListener("change", (event) => {
-            const checkboxes = document.querySelectorAll(
-              'input[type="checkbox"][name="model"]'
-            );
-            for (let i = 0; i < checkboxes.length; i++) {
-              checkboxes[i].checked = event.target.checked;
-            }
-          });
-    
-          const plotModels = async () => {
-            document.getElementById("loading-spinner").style.display = "block";
-            document.getElementById("plots").style.display = "none";
-            
-            const data = await fetchModels();
-            
-            
-            document.getElementById("loading-spinner").style.display = "none";
-            document.getElementById("plots").style.display = "initial";
-            
-            if (!data) return;
-    
-            Plotly.newPlot("mae-plot", data.mae_plot);
-            Plotly.newPlot("rmse-plot", data.rmse_plot);
-            Plotly.newPlot("time-plot", data.time_plot);
-          };
-    
-          window.addEventListener("load", async () => {
-            await plotModels();
-          });
-    
-          document
-            .getElementById("evaluate_button")
-            .addEventListener("click", async (event) => {
-                event.preventDefault();
-              await plotModels();
-            });
-        </script>
+  <script>
+    const fetchModels = async () => {
+      try {
+        const modelsInPage = [...document.getElementsByName("model")];
+        const filteredModelsInPage = (() => {
+          if (modelsInPage.every((input) => !input.checked)) {
+            return modelsInPage.map((input) => input.value)
+          }
+          return modelsInPage
+            .filter((input) => !!input.checked)
+            .map((input) => input.value);
+        })();
+        const response = await (async () => {
+          if (!filteredModelsInPage.length) {
+            return await fetch("/mae_rmse/get_plots");
+          }
+          return await fetch(
+            `/mae_rmse/get_plots/${filteredModelsInPage.join(",")}`
+          );
+        })();
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Error fetching plot data:", error);
+        return null;
+      }
+    };
+
+    document.getElementById("selectAll").addEventListener("change", (event) => {
+      const checkboxes = document.querySelectorAll(
+        'input[type="checkbox"][name="model"]'
+      );
+      for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = event.target.checked;
+      }
+    });
+
+    const plotModels = async () => {
+      document.getElementById("loading-spinner").style.display = "block";
+      document.getElementById("plots").style.display = "none";
+
+      const data = await fetchModels();
+
+
+      document.getElementById("loading-spinner").style.display = "none";
+      document.getElementById("plots").style.display = "initial";
+
+      if (!data) return;
+
+      Plotly.newPlot("mae-plot", data.mae_plot);
+      Plotly.newPlot("rmse-plot", data.rmse_plot);
+      Plotly.newPlot("time-plot", data.time_plot);
+    };
+
+    window.addEventListener("load", async () => {
+      await plotModels();
+    });
+
+    document
+      .getElementById("evaluate_button")
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
+        await plotModels();
+      });
+  </script>
 
 </body>
 

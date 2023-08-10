@@ -19,12 +19,14 @@ def get_model_instance(model_name):
 
 def get_plots(selected_models, function, k=0):
     plots = []
-    
-    random_state_value = random.randint(0, 2**32 - 1) # the interval of the random_state
-    
+
+    random_state_value = random.randint(
+        0, 2**32 - 1
+    )  # the interval of the random_state
+
     if k:
         for model_name in selected_models:
-            for i, score_bar in enumerate(function(model_name,random_state_value, k)):
+            for i, score_bar in enumerate(function(model_name, random_state_value, k)):
                 try:
                     if not plots[i]:
                         plots[i] = []
@@ -91,7 +93,7 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
     precision_score, recall_score, f1_score = requests.get(
         f"http://127.0.0.1:8000/api/v1/precision_recall_f1/{model_name}/{random_state_value}/{k}"
     ).json()
-    
+
     precision_bar = go.Bar(
         name=f"{model_name}",
         x=["Precision"],
@@ -138,17 +140,19 @@ def get_top_k_percent(sorted_list, k):
 
     return top_k_percent
 
+
 def get_models():
     legal_models = ["svd", "knn", "baseline", "slope_one", "co_clustering"]
-    
+
     potential_models = request.args.getlist("model")
 
     selected_models = set(potential_models) & set(legal_models)
 
     if not selected_models:
         selected_models = legal_models
-    
+
     return selected_models
+
 
 def get_k_value():
     k_value = request.args.get("k")
@@ -157,14 +161,15 @@ def get_k_value():
         k_value = 10
     else:
         k_value = int(k_value)
-        
+
     return k_value
+
 
 def get_comparison_method():
     legal_methods = ["mae_rmse", "precision_recall_f1"]
 
     comparison_method = request.args.get("comparison_method")
-    
+
     if comparison_method not in legal_methods:
         comparison_method = legal_methods[0]
 

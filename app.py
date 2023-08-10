@@ -5,7 +5,6 @@ import utils
 app = Flask(__name__)
 
 
-# Load the dataset
 @app.route("/")
 def show_main():
     return render_template("main.html")
@@ -60,14 +59,11 @@ def get_mae_rmse_plots(models):
     )
 
 
-@app.route("/precision_recall_f1/get_plots/<k_value>/<models>/", methods=["GET"])
-def get_precision_recall_f1_plots(models, k_value ):
+@app.route("/precision_recall_f1/get_plots/<int:k_value>/<models>/", methods=["GET"])
+def get_precision_recall_f1_plots(models, k_value):
     selected_models = models.split(",")
-
-    if not k_value:
-        k_value = 10
-    else:
-        k_value = int(k_value)
+    
+    
 
     precision_to_plot, recall_to_plot, f1_to_plot = utils.get_plots(
         selected_models, utils.get_precision_recall_f1_score_bars, k_value
@@ -91,29 +87,23 @@ def get_precision_recall_f1_plots(models, k_value ):
     )
 
 
-@app.route("/robustness/get_plots", methods=["GET"])
-def get_robustness_plots():
-    # selected_models = utils.get_models()
+@app.route("/robustness/get_plots/<k_value>/<comparison_method>/<models>", methods=["GET"])
+def get_robustness_plots(models, k_value, comparison_method):
+    selected_models = models.split(",")
 
-    # k_value = utils.get_k_value()
+    robustness_plot = utils.get_plots(
+        selected_models, comparison_method, k_value
+    )
 
-    # comparison_name = utils.get_comparison_method()
+    fig_robustness = go.Figure(data=robustness_plot)
+    fig_robustness.update_layout(title="Robustness", barmode='group')
 
-    # if comparison_name
-
-    # robustness_plot = utils.get_plots(
-    #     selected_models, comparison_method, k_value
-    # )
-
-    # fig_robustness = go.Figure(data=robustness_plot)
-    # fig_robustness.update_layout(title="Robustness", barmode='group')
-
-    # return jsonify(
-    #     {
-    #         "robustness_plot": fig_robustness.to_plotly_json()
-    #     }
-    # )
-    ...
+    return jsonify(
+        {
+            "robustness_plot": fig_robustness.to_plotly_json()
+        }
+    )
+    
 
 
 if __name__ == "__main__":

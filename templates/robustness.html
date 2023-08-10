@@ -34,18 +34,17 @@
         <label for="nr_users">Number of users</label>
 
         <input type="number" id="rating" name="rating" min="1" max="5">
-        <label for="rating">Rating</label>
+        <label for="rating">Rating</label
 
-
-        <input type="radio" id="mae_rmse" name="comparision_method" value="mae_rmse">
+        <input type="radio" id="mae_rmse" name="comparison_method" value="mae_rmse">
         <label for="mae_rmse">MAE, RMSE</label>
-    
-        <input type="radio" id="precision_recall_f1" name="comparision_method" value="precision_recall_f1">
+
+        <input type="radio" id="precision_recall_f1" name="comparison_method" value="precision_recall_f1">
         <label for="precision_recall_f1">Precision, Recall, F1</label>
 
-        <input type="submit" value="Evaluate">
+        <input type="submit" value="Evaluate" id="evaluate_button">
     </form>
- 
+
 
     <div id="loading-spinner" style="display: none">
         Loading...
@@ -63,7 +62,7 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('loading-spinner').style.display = 'block';
 
             fetch('/robustness/get_plots')

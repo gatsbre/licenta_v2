@@ -11,11 +11,14 @@ import pandas as pd
 
 app = Flask(__name__)
 
+
 @app.route("/api/v1/mae_rmse/<model_name>/<int:random_state_value>", methods=["GET"])
 def get_mae_rmse_model(model_name, random_state_value):
     data = Dataset.load_builtin("ml-100k")
 
-    train_data, test_data = train_test_split(data, train_size=0.8, random_state=random_state_value)
+    train_data, test_data = train_test_split(
+        data, train_size=0.8, random_state=random_state_value
+    )
     model = utils.get_model_instance(model_name)
     start_time = time.time()
     model.fit(train_data)
@@ -28,11 +31,16 @@ def get_mae_rmse_model(model_name, random_state_value):
     return jsonify(rmse_score, mae_score, end_time - start_time)
 
 
-@app.route("/api/v1/precision_recall_f1/<model_name>/<int:random_state_value>/<int:k>", methods=["GET"])
+@app.route(
+    "/api/v1/precision_recall_f1/<model_name>/<int:random_state_value>/<int:k>",
+    methods=["GET"],
+)
 def get_recall_precision_f1_model_k(model_name, random_state_value, k):
     data = Dataset.load_builtin("ml-100k")
-    
-    train_data, test_data = train_test_split(data, train_size=0.8, random_state=random_state_value)
+
+    train_data, test_data = train_test_split(
+        data, train_size=0.8, random_state=random_state_value
+    )
 
     model = utils.get_model_instance(model_name)
 
