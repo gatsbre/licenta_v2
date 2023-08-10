@@ -56,10 +56,10 @@
         })();
         const response = await (async () => {
           if (!filteredModelsInPage.length) {
-            return await fetch("/mae_rmse/get_plots");
+            return await fetch("/mae_rmse/get_plots/");
           }
           return await fetch(
-            `/mae_rmse/get_plots/${filteredModelsInPage.join(",")}`
+            `/mae_rmse/get_plots/${filteredModelsInPage.join(",")}/`
           );
         })();
         const data = await response.json();

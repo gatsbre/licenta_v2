@@ -1,4 +1,4 @@
-from flask import jsonify, Flask
+from flask import jsonify, Flask, request
 from surprise import Dataset, Reader
 from surprise.model_selection import train_test_split
 from surprise.accuracy import rmse, mae
@@ -12,47 +12,67 @@ import pandas as pd
 app = Flask(__name__)
 
 
-@app.route("/api/v1/mae_rmse/<model_name>/<int:random_state_value>", methods=["GET"])
-def get_mae_rmse_model(model_name, random_state_value):
+@app.route("/api/v1/mae_rmse", methods=["POST"])
+def post_mae_rmse_model():
+    request_data = request.json
+    
+    model_name = request_data.get("model_name")
+    random_state_value = request_data.get("random_state_value")
+    
     data = Dataset.load_builtin("ml-100k")
-
     train_data, test_data = train_test_split(
         data, train_size=0.8, random_state=random_state_value
     )
+    
     model = utils.get_model_instance(model_name)
+    
     start_time = time.time()
     model.fit(train_data)
-
+    
     predictions = model.test(test_data)
     end_time = time.time()
+    
     mae_score = mae(predictions, verbose=False)
     rmse_score = rmse(predictions, verbose=False)
+    
+    response_data = {
+        "rmse_score": rmse_score,
+        "mae_score": mae_score,
+        "execution_time": end_time - start_time
+    }
+    
+    return jsonify(response_data)
 
-    return jsonify(rmse_score, mae_score, end_time - start_time)
 
-
-@app.route(
-    "/api/v1/precision_recall_f1/<model_name>/<int:random_state_value>/<int:k>",
-    methods=["GET"],
-)
-def get_recall_precision_f1_model_k(model_name, random_state_value, k):
+@app.route("/api/v1/precision_recall_f1", methods=["POST"])
+def post_precision_recall_f1_model_k():
+    request_data = request.json
+    
+    model_name = request_data.get("model_name")
+    random_state_value = request_data.get("random_state_value")
+    k = request_data.get("k")
+    
     data = Dataset.load_builtin("ml-100k")
-
     train_data, test_data = train_test_split(
         data, train_size=0.8, random_state=random_state_value
     )
-
+    
     model = utils.get_model_instance(model_name)
-
     model.fit(train_data)
-
+    
     predictions = model.test(test_data)
-
+    
     precision_score, recall_score, f1_score = eval_func.precision_recall_f1(
         test_data, predictions, k
     )
-
-    return jsonify(precision_score, recall_score, f1_score)
+    
+    response_data = {
+        "precision_score": precision_score,
+        "recall_score": recall_score,
+        "f1_score": f1_score
+    }
+    
+    return jsonify(response_data)
 
 
 @app.route("/api/v1/robustness/<model_name>/<nr_users>/<rating>", methods=["GET"])

@@ -25,7 +25,7 @@ def show_precision_f1_recall():
     return render_template("precision_recall_f1.html")
 
 
-@app.route("/mae_rmse/get_plots/<models>", methods=["GET"])
+@app.route("/mae_rmse/get_plots/<models>/", methods=["GET"])
 def get_mae_rmse_plots(models):
     selected_models = models.split(",")
 

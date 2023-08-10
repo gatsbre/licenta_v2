@@ -48,9 +48,18 @@ def get_plots(selected_models, function, k=0):
 
 def get_mae_rmse_score_bars(model_name, random_state_value):
     bar_width = 0.1
-    rmse_score, mae_score, elapsed_time = requests.get(
-        f"http://127.0.0.1:8000/api/v1/mae_rmse/{model_name}/{random_state_value}"
-    ).json()
+    
+    post_data = {
+        "model_name": model_name,
+        "random_state_value": random_state_value
+    }
+    
+    response = requests.post("http://127.0.0.1:8000/api/v1/mae_rmse", json=post_data)
+    response_data = response.json()
+    
+    mae_score = response_data["mae_score"]
+    rmse_score = response_data["rmse_score"]
+    elapsed_time = response_data["execution_time"]
 
     mae_bar = go.Bar(
         name=f"{model_name}",
@@ -90,9 +99,19 @@ def get_mae_rmse_score_bars(model_name, random_state_value):
 
 def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
     bar_width = 0.1
-    precision_score, recall_score, f1_score = requests.get(
-        f"http://127.0.0.1:8000/api/v1/precision_recall_f1/{model_name}/{random_state_value}/{k}"
-    ).json()
+    
+    post_data = {
+        "model_name": model_name,
+        "random_state_value": random_state_value,
+        "k": k
+    }
+    
+    response = requests.post("http://127.0.0.1:8000/api/v1/precision_recall_f1", json=post_data)
+    response_data = response.json()
+    
+    precision_score = response_data["precision_score"]
+    recall_score = response_data["recall_score"]
+    f1_score = response_data["f1_score"]
 
     precision_bar = go.Bar(
         name=f"{model_name}",
@@ -121,11 +140,11 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
         x=["F1"],
         y=[f1_score],
         width=bar_width,
-        text=[f"{model_name} <br> F1: {round(f1_score, 6)}s"],
+        text=[f"{model_name} <br> F1: {round(f1_score, 6)}"],
         textposition="inside",
         insidetextanchor="middle",
         hoverinfo="text",
-        hovertext=f"Model: {model_name} <br>F1: {round(f1_score, 6)}s",
+        hovertext=f"Model: {model_name} <br>F1: {round(f1_score, 6)}",
     )
 
     return precision_bar, recall_bar, f1_bar

@@ -58,10 +58,10 @@
                 })();
                 const response = await (async () => {
                     if (!filteredModelsInPage.length) {
-                        return await fetch(`/precision_recall_f1/get_plots/${kValue}`);
+                        return await fetch(`/precision_recall_f1/get_plots/${kValue}/`);
                     }
                     return await fetch(
-                        `/precision_recall_f1/get_plots/${kValue}/${filteredModelsInPage.join(",")}`
+                        `/precision_recall_f1/get_plots/${kValue}/${filteredModelsInPage.join(",")}/`
                     );
                 })();
                 const data = await response.json();
