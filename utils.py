@@ -17,7 +17,7 @@ def get_model_instance(model_name):
     return model_factories[model_name]()
 
 
-def get_plots(selected_models, function, k=0):
+def get_plots(selected_models, function, k=0, nr_users=0, rating=0):
     plots = []
 
     random_state_value = random.randint(
@@ -33,6 +33,18 @@ def get_plots(selected_models, function, k=0):
                 except IndexError:
                     plots.append([])
                 plots[i].append(score_bar)
+
+    elif nr_users and rating:
+        for model_name in selected_models:
+            for i, score_bar in enumerate(
+                function(model_name, random_state_value, nr_users, rating)
+            ):
+                try:
+                    if not plots[i % 2]:
+                        plots[i % 2] = []
+                except IndexError:
+                    plots.append([])
+                plots[i % 2].append(score_bar)
     else:
         for model_name in selected_models:
             for i, score_bar in enumerate(function(model_name, random_state_value)):
@@ -48,15 +60,12 @@ def get_plots(selected_models, function, k=0):
 
 def get_mae_rmse_score_bars(model_name, random_state_value):
     bar_width = 0.1
-    
-    post_data = {
-        "model_name": model_name,
-        "random_state_value": random_state_value
-    }
-    
+
+    post_data = {"model_name": model_name, "random_state_value": random_state_value}
+
     response = requests.post("http://127.0.0.1:8000/api/v1/mae_rmse", json=post_data)
     response_data = response.json()
-    
+
     mae_score = response_data["mae_score"]
     rmse_score = response_data["rmse_score"]
     elapsed_time = response_data["execution_time"]
@@ -99,16 +108,18 @@ def get_mae_rmse_score_bars(model_name, random_state_value):
 
 def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
     bar_width = 0.1
-    
+
     post_data = {
         "model_name": model_name,
         "random_state_value": random_state_value,
-        "k": k
+        "k": k,
     }
-    
-    response = requests.post("http://127.0.0.1:8000/api/v1/precision_recall_f1", json=post_data)
+
+    response = requests.post(
+        "http://127.0.0.1:8000/api/v1/precision_recall_f1", json=post_data
+    )
     response_data = response.json()
-    
+
     precision_score = response_data["precision_score"]
     recall_score = response_data["recall_score"]
     f1_score = response_data["f1_score"]
@@ -148,6 +159,85 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
     )
 
     return precision_bar, recall_bar, f1_bar
+
+
+def get_robustness_score_bars(model_name, random_state_value, nr_users, rating):
+    bar_width = 0.1
+
+    robustness_post_data = {
+        "model_name": model_name,
+        "random_state_value": random_state_value,
+        "nr_users": nr_users,
+        "rating": rating,
+    }
+
+    base_post_data = {
+        "model_name": model_name,
+        "random_state_value": random_state_value,
+    }
+
+    response = requests.post(
+        "http://127.0.0.1:8000/api/v1/robustness", json=robustness_post_data
+    )
+    robustness_response_data = response.json()
+
+    response = requests.post(
+        "http://localhost:8000/api/v1/mae_rmse", json=base_post_data
+    )
+    base_response_data = response.json()
+
+    robustness_mae_score = robustness_response_data["mae_score"]
+    robustness_rmse_score = robustness_response_data["rmse_score"]
+    base_mae_score = base_response_data["mae_score"]
+    base_rmse_score = base_response_data["rmse_score"]
+
+    robustness_mae_bar = go.Bar(
+        name=f"{model_name}",
+        x=["MAE"],
+        y=[robustness_mae_score],
+        width=bar_width,
+        text=[f"{model_name} <br> MAE: {round(robustness_mae_score, 6)}"],
+        textposition="inside",
+        insidetextanchor="middle",
+        hoverinfo="text",
+        hovertext=f"Model: {model_name} <br>MAE: {robustness_mae_score}",
+    )
+    robustness_rmse_bar = go.Bar(
+        name=f"{model_name}",
+        x=["RMSE"],
+        y=[robustness_rmse_score],
+        width=bar_width,
+        text=[f"{model_name} <br> RMSE: {round(robustness_rmse_score, 6)}"],
+        textposition="inside",
+        insidetextanchor="middle",
+        hoverinfo="text",
+        hovertext=f"Model: {model_name} <br>RMSE: {robustness_rmse_score}",
+    )
+
+    base_mae_bar = go.Bar(
+        name=f"{model_name}",
+        x=["MAE"],
+        y=[base_mae_score],
+        width=bar_width,
+        text=[f"{model_name} <br> MAE: {round(base_mae_score, 6)}"],
+        textposition="inside",
+        insidetextanchor="middle",
+        hoverinfo="text",
+        hovertext=f"Model: {model_name} <br>MAE: {base_mae_score}",
+    )
+    base_rmse_bar = go.Bar(
+        name=f"{model_name}",
+        x=["RMSE"],
+        y=[base_rmse_score],
+        width=bar_width,
+        text=[f"{model_name} <br> RMSE: {round(base_rmse_score, 6)}"],
+        textposition="inside",
+        insidetextanchor="middle",
+        hoverinfo="text",
+        hovertext=f"Model: {model_name} <br>RMSE: {base_rmse_score}",
+    )
+
+    return robustness_mae_bar, robustness_rmse_bar, base_mae_bar, base_rmse_bar
 
 
 def get_top_k_percent(sorted_list, k):

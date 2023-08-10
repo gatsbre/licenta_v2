@@ -30,10 +30,10 @@
         <input type="number" id="k" name="k" min="10" , max="100">
         <label for="k">K</label>
 
-        <input type="number" id="nr_users" name="nr_users" min="1" max="100">
+        <input type="number" id="nr_users" name="nr_users" min="1" max="1000" value="20" step="1">
         <label for="nr_users">Number of users</label>
 
-        <input type="number" id="rating" name="rating" min="1" max="5">
+        <input type="number" id="rating" name="rating" min="1.0" max="5.0" value="5.0" step="0.5">
         <label for="rating">Rating</label
 
         <input type="radio" id="mae_rmse" name="comparison_method" value="mae_rmse">
@@ -50,32 +50,76 @@
         Loading...
     </div>
 
-    <div id="robustness-plot"></div>
-
+    <div id="plots" style="display:block">
+        <div id="robustness-mae-plot"></div>
+        <div id="robustness-rmse-plot"></div>
+    </div>
 
     <script>
+        const fetchModels = async () => {
+            try {
+                const modelsInPage = [...document.getElementsByName("model")];
+                const nrUsers = document.getElementById("nr_users").value
+                const rating = document.getElementById("rating").value
+                const filteredModelsInPage = (() => {
+                    if (modelsInPage.every((input) => !input.checked)) {
+                        return modelsInPage.map((input) => input.value)
+                    }
+                    return modelsInPage
+                        .filter((input) => !!input.checked)
+                        .map((input) => input.value);
+                })();
+                const response = await (async () => {
+                    if (!filteredModelsInPage.length) {
+                        return await fetch(`/robustness/get_plots/${nrUsers}/${rating}/`);
+                    }
+                    return await fetch(
+                        `/robustness/get_plots/${nrUsers}/${rating}/${filteredModelsInPage.join(",")}`
+                    );
+                })();
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching plot data:", error);
+                return null;
+            }
+        };
 
-        document.getElementById("selectAll").addEventListener("change", function () {
-            var checkboxes = document.querySelectorAll('input[type="checkbox"][name="model"]');
-            for (var i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].checked = this.checked;
+        document.getElementById("selectAll").addEventListener("change", (event) => {
+            const checkboxes = document.querySelectorAll(
+                'input[type="checkbox"][name="model"]'
+            );
+            for (let i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = event.target.checked;
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('loading-spinner').style.display = 'block';
+        const plotModels = async () => {
+            document.getElementById("loading-spinner").style.display = "block";
+            document.getElementById("plots").style.display = "none";
 
-            fetch('/robustness/get_plots')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('loading-spinner').style.display = 'none';
+            const data = await fetchModels();
 
-                    Plotly.newPlot('robustness-plot', data.robustness_plot);
-                })
-                .catch(error => {
-                    console.error('Error fetching plot data:', error);
-                });
+
+            document.getElementById("loading-spinner").style.display = "none";
+            document.getElementById("plots").style.display = "initial";
+
+            if (!data) return;
+
+            Plotly.newPlot("robustness-mae-plot", data.robustness_mae_plot);
+            Plotly.newPlot("robustness-rmse-plot", data.robustness_rmse_plot)
+        };
+
+        window.addEventListener("load", async () => {
+            await plotModels();
         });
+
+        document
+            .getElementById("evaluate_button")
+            .addEventListener("click", async (event) => {
+                event.preventDefault();
+                await plotModels();
+            });
     </script>
 </body>
 

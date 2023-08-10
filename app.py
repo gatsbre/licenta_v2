@@ -62,8 +62,6 @@ def get_mae_rmse_plots(models):
 @app.route("/precision_recall_f1/get_plots/<int:k_value>/<models>/", methods=["GET"])
 def get_precision_recall_f1_plots(models, k_value):
     selected_models = models.split(",")
-    
-    
 
     precision_to_plot, recall_to_plot, f1_to_plot = utils.get_plots(
         selected_models, utils.get_precision_recall_f1_score_bars, k_value
@@ -87,23 +85,31 @@ def get_precision_recall_f1_plots(models, k_value):
     )
 
 
-@app.route("/robustness/get_plots/<k_value>/<comparison_method>/<models>", methods=["GET"])
-def get_robustness_plots(models, k_value, comparison_method):
+@app.route(
+    "/robustness/get_plots/<int:nr_users>/<float:rating>/<models>", methods=["GET"]
+)
+def get_robustness_plots(models, nr_users, rating):
     selected_models = models.split(",")
 
-    robustness_plot = utils.get_plots(
-        selected_models, comparison_method, k_value
+    mae_to_plot, rmse_to_plots = utils.get_plots(
+        selected_models,
+        utils.get_robustness_score_bars,
+        nr_users=nr_users,
+        rating=rating,
     )
 
-    fig_robustness = go.Figure(data=robustness_plot)
-    fig_robustness.update_layout(title="Robustness", barmode='group')
+    fig_robustness_mae = go.Figure(data=mae_to_plot)
+    fig_robustness_mae.update_layout(title="Robustness MAE", barmode="group")
+
+    fig_robustness_rmse = go.Figure(data=rmse_to_plots)
+    fig_robustness_rmse.update_layout(title="Robustness RMSE", barmode="group")
 
     return jsonify(
         {
-            "robustness_plot": fig_robustness.to_plotly_json()
+            "robustness_mae_plot": fig_robustness_mae.to_plotly_json(),
+            "robustness_rmse_plot": fig_robustness_rmse.to_plotly_json(),
         }
     )
-    
 
 
 if __name__ == "__main__":
