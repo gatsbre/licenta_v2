@@ -4,7 +4,10 @@
 
 <head>
   <title>RSE: MAE, RMSE</title>
+
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="/bootstrap/js/bootstrap.js"></script>
+
   <link rel="stylesheet" type="text/css" href="/css/styles.css">
   <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css">
 </head>
@@ -12,11 +15,13 @@
 <body>
   <div class="accordion">
     <div class="accordion-item">
-      <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse"
-          data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          Configurare pentru metricile MAE si RMSE
-        </button></h2>
-      <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+          aria-expanded="true" aria-controls="collapseOne">
+          Configurari pentru metricile MAE si RMSE
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
         <div class="accordion-body">
           <form id="evaluationForm" action="/mae_rmse" method="get">
 
@@ -48,14 +53,13 @@
   <div id="plots" style="display:block">
     <div id="loading-window" class="loading-window">
       Fetching plot data...
+      <br><br>
+      <div class="spinner-grow"></div>
     </div>
     <div id="mae-plot"></div>
     <div id="rmse-plot"></div>
     <div id="time-plot"></div>
   </div>
-
-
-  <script src="/bootstrap/js/bootstrap.js"></script>
 
   <script>
     const fetchModels = async () => {

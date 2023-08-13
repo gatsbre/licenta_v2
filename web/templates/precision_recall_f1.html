@@ -3,42 +3,63 @@
 
 <head>
     <title>RSE: Precision, Recall, F1</title>
+
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.js"></script>
+
     <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css">
 </head>
 
 <body>
-    <form id="evaluationForm" action="/precision_recall_f1" method="get">
+    <div class="accordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Configurari pentru metricile Precision, Recall si F1
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <form id="evaluationForm" action="/precision_recall_f1" method="get">
 
-        <input type="checkbox" name="model" value="svd" id="svd">
-        <label for="svd">SVD</label>
-        <br>
-        <input type="checkbox" name="model" value="knn" id="knn">
-        <label for="knn">K-Nearest Neighbours</label>
-        <br>
-        <input type="checkbox" name="model" value="baseline" id="baseline">
-        <label for="baseline">Baseline</label>
-        <br>
-        <input type="checkbox" name="model" value="slope_one" id="slope_one">
-        <label for="slope_one">Slope One</label>
-        <br>
-        <input type="checkbox" name="model" value="co_clustering" id="co_clustering">
-        <label for="co_clustering">CoClustering</label>
-        <br>
-        <input type="checkbox" id="selectAll">
-        <label for="selectAll">Select All</label>
-        <br><br>
-        <label for="k">K</label>
-        <input type="number" id="k" name="k" min="1" max="100" value="10">
-        <br><br>
-        <input type="submit" value="Evaluate" id="evaluate_button">
-    </form>
+                        <input type="checkbox" name="model" value="svd" id="svd">
+                        <label for="svd">SVD</label>
+                        <br>
+                        <input type="checkbox" name="model" value="knn" id="knn">
+                        <label for="knn">K-Nearest Neighbours</label>
+                        <br>
+                        <input type="checkbox" name="model" value="baseline" id="baseline">
+                        <label for="baseline">Baseline</label>
+                        <br>
+                        <input type="checkbox" name="model" value="slope_one" id="slope_one">
+                        <label for="slope_one">Slope One</label>
+                        <br>
+                        <input type="checkbox" name="model" value="co_clustering" id="co_clustering">
+                        <label for="co_clustering">CoClustering</label>
+                        <br>
+                        <input type="checkbox" id="selectAll">
+                        <label for="selectAll">Select All</label>
+                        <br><br>
+                        <label for="k">K</label>
+                        <input type="number" id="k" name="k" min="1" max="100" value="10">
+                        <br><br>
+                        <input type="submit" value="Evaluate" id="evaluate_button">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 
     <div id="plots" style="display:block">
         <div id="loading-window" class="loading-window">
-            Fetching plot data...
+          Fetching plot data...
+          <br><br>
+          <div class="spinner-grow"></div>
         </div>
         <div id="precision-plot"></div>
         <div id="recall-plot"></div>
