@@ -83,7 +83,7 @@
                         <!-- <input type="radio" id="precision_recall_f1" name="comparison_method" value="precision_recall_f1">
         <label for="precision_recall_f1">Precision, Recall, F1</label> -->
 
-                        <input type="submit" value="Evaluate" id="evaluate_button">
+                        <input type="submit" value="Evaluate" id="evaluate_button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
                     </form>
                 </div>
             </div>
@@ -107,7 +107,7 @@
             try {
                 const modelsInPage = [...document.getElementsByName("model")];
                 const nrUsers = document.getElementById("nr_users").value
-                const rating = document.getElementById("rating").value
+                const rating = parseFloat(document.getElementById("rating").value).toFixed(1)
                 const inputsInPage = [...document.getElementsByTagName("input")]
                 const disableAllInputs = (() => {
                     inputsInPage.map((input) => input.disabled = true)
