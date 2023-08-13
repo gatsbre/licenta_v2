@@ -81,13 +81,10 @@
 
     const plotModels = async () => {
       document.getElementById("loading-spinner").style.display = "block";
-      document.getElementById("plots").style.display = "none";
 
       const data = await fetchModels();
 
-
       document.getElementById("loading-spinner").style.display = "none";
-      document.getElementById("plots").style.display = "initial";
 
       if (!data) return;
 
