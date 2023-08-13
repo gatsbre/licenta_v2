@@ -4,6 +4,7 @@
 <head>
     <title>RSE: Precision, Recall, F1</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
 </head>
 
 <body>
@@ -33,11 +34,12 @@
         <input type="submit" value="Evaluate" id="evaluate_button">
     </form>
 
-    <div id="loading-spinner" style="display: none">
-        Loading...
-    </div>
+    
 
     <div id="plots" style="display:block">
+        <div id="loading-window" class="loading-window">
+            Loading...
+        </div>
         <div id="precision-plot"></div>
         <div id="recall-plot"></div>
         <div id="f1-plot"></div>
@@ -82,11 +84,11 @@
         });
 
         const plotModels = async () => {
-            document.getElementById("loading-spinner").style.display = "block";
+            document.getElementById("loading-window").style.display = "block";
 
             const data = await fetchModels();
 
-            document.getElementById("loading-spinner").style.display = "none";
+            document.getElementById("loading-window").style.display = "none";
 
             if (!data) return;
 

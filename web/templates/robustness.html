@@ -4,7 +4,7 @@
 <head>
     <title>RSE: Robustness</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
 </head>
 
 <body>
@@ -49,7 +49,7 @@
 
 
     <div id="plots" style="display: block; position: relative;">
-        <div id="loading-spinner" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(254, 254, 254, 0.9); border: 2px solid #ccc;  padding: 30px; text-align: center; z-index: 2; width: 300px;">
+        <div id="loading-window" class="loading-window">
             Loading...
         </div>
         <div id="robustness-mae-plot"></div>
@@ -104,17 +104,16 @@
         });
 
         const plotModels = async () => {
-            const loadingSpinner = document.getElementById("loading-spinner");
-            loadingSpinner.style.display = "block"; // Display the spinner before fetching data
+            const loadingSpinner = document.getElementById("loading-window");
+            loadingSpinner.style.display = "block";
         
             const data = await fetchModels();
         
             if (!data) {
-                loadingSpinner.style.display = "none"; // Hide the spinner in case of error
+                loadingSpinner.style.display = "none";
                 return;
             }
         
-            // Hide the spinner after fetching and plotting data
             loadingSpinner.style.display = "none";
         
             Plotly.newPlot("robustness-mae-plot", data.robustness_mae_plot);

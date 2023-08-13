@@ -130,8 +130,8 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
         y=[precision_score],
         width=bar_width,
         text=[f"{model_name} <br> Precision: {round(precision_score, 6)}"],
-        textposition="inside",
-        insidetextanchor="middle",
+        textposition="outside",
+        # insidetextanchor="middle",
         hoverinfo="text",
         hovertext=f"Model: {model_name} <br>Precision: {precision_score}",
     )
@@ -141,8 +141,8 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
         y=[recall_score],
         width=bar_width,
         text=[f"{model_name} <br> Recall: {round(recall_score, 6)}"],
-        textposition="inside",
-        insidetextanchor="middle",
+        textposition="outside",
+        # insidetextanchor="middle",
         hoverinfo="text",
         hovertext=f"Model: {model_name} <br>Recall: {recall_score}",
     )
@@ -152,8 +152,8 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
         y=[f1_score],
         width=bar_width,
         text=[f"{model_name} <br> F1: {round(f1_score, 6)}"],
-        textposition="inside",
-        insidetextanchor="middle",
+        textposition="outside",
+        # insidetextanchor="middle",
         hoverinfo="text",
         hovertext=f"Model: {model_name} <br>F1: {round(f1_score, 6)}",
     )

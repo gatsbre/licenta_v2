@@ -2,7 +2,12 @@ from flask import Flask, render_template, jsonify
 from plotly import graph_objects as go
 import utils
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_url_path="",
+    static_folder="web/static",
+    template_folder="web/templates",
+)
 
 
 @app.route("/")
@@ -46,7 +51,7 @@ def get_mae_rmse_plots(models):
         title="Timpul de antrenare si de predictie a modelelor",
         barmode="group",
         yaxis=dict(
-            range=(0, max(time_to_plot, key=lambda time: time["y"])["y"][0] + 0.2)
+            range=(0, max(time_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.2)
         ),
     )
 
@@ -68,13 +73,33 @@ def get_precision_recall_f1_plots(models, k_value):
     )
 
     fig_precision = go.Figure(data=precision_to_plot)
-    fig_precision.update_layout(title="Precision", barmode="group")
+    fig_precision.update_layout(
+        title="Precision",
+        barmode="group",
+        yaxis=dict(
+            range=(0, max(precision_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.2)
+        ),
+    )
+
+    print(max(precision_to_plot, key=lambda time: time["y"])["y"][0])
 
     fig_recall = go.Figure(data=recall_to_plot)
-    fig_recall.update_layout(title="Recall", barmode="group")
+    fig_recall.update_layout(
+        title="Recall",
+        barmode="group",
+        yaxis=dict(
+            range=(0, max(recall_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.2)
+        ),
+    )
+    # fig_recall.update_yaxes(type="log")
 
     fig_f1 = go.Figure(data=f1_to_plot)
-    fig_f1.update_layout(title="F1", barmode="group")
+    fig_f1.update_layout(
+        title="F1",
+        barmode="group",
+        yaxis=dict(range=(0, max(f1_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.2)),
+    )
+    # fig_f1.update_yaxes(type="log")
 
     return jsonify(
         {
