@@ -196,22 +196,26 @@ def get_robustness_score_bars(model_name, random_state_value, nr_users, rating):
         x=["MAE"],
         y=[robustness_mae_score],
         width=bar_width,
-        text=[f"{model_name} <br> MAE: {round(robustness_mae_score, 6)}"],
+        text=[
+            f"{model_name} <br>After adding users <br> MAE: {round(robustness_mae_score, 6)}"
+        ],
         textposition="inside",
         insidetextanchor="middle",
         hoverinfo="text",
-        hovertext=f"Model: {model_name} <br>MAE: {robustness_mae_score}",
+        hovertext=f"Model: {model_name} <br>After adding users <br>MAE: {robustness_mae_score}",
     )
     robustness_rmse_bar = go.Bar(
         name=f"{model_name}",
         x=["RMSE"],
         y=[robustness_rmse_score],
         width=bar_width,
-        text=[f"{model_name} <br> RMSE: {round(robustness_rmse_score, 6)}"],
+        text=[
+            f"{model_name} <br>After adding users <br> RMSE: {round(robustness_rmse_score, 6)}"
+        ],
         textposition="inside",
         insidetextanchor="middle",
         hoverinfo="text",
-        hovertext=f"Model: {model_name} <br>RMSE: {robustness_rmse_score}",
+        hovertext=f"Model: {model_name} <br>After adding users <br>RMSE: {robustness_rmse_score}",
     )
 
     base_mae_bar = go.Bar(
@@ -219,22 +223,26 @@ def get_robustness_score_bars(model_name, random_state_value, nr_users, rating):
         x=["MAE"],
         y=[base_mae_score],
         width=bar_width,
-        text=[f"{model_name} <br> MAE: {round(base_mae_score, 6)}"],
+        text=[
+            f"{model_name} <br>Before adding users <br> Base MAE: {round(base_mae_score, 6)}"
+        ],
         textposition="inside",
         insidetextanchor="middle",
         hoverinfo="text",
-        hovertext=f"Model: {model_name} <br>MAE: {base_mae_score}",
+        hovertext=f"Model: {model_name} <br>Before adding users <br>MAE: {base_mae_score}",
     )
     base_rmse_bar = go.Bar(
         name=f"{model_name}",
         x=["RMSE"],
         y=[base_rmse_score],
         width=bar_width,
-        text=[f"{model_name} <br> RMSE: {round(base_rmse_score, 6)}"],
+        text=[
+            f"{model_name} <br>Before adding users <br> Base RMSE: {round(base_rmse_score, 6)}"
+        ],
         textposition="inside",
         insidetextanchor="middle",
         hoverinfo="text",
-        hovertext=f"Model: {model_name} <br>RMSE: {base_rmse_score}",
+        hovertext=f"Model: {model_name} <br>Before adding users <br>RMSE: {base_rmse_score}",
     )
 
     return robustness_mae_bar, robustness_rmse_bar, base_mae_bar, base_rmse_bar

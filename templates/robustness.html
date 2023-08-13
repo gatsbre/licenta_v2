@@ -4,6 +4,7 @@
 <head>
     <title>RSE: Robustness</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -11,46 +12,46 @@
 
         <input type="checkbox" name="model" value="svd" id="svd">
         <label for="svd">SVD</label>
-
+        <br>
         <input type="checkbox" name="model" value="knn" id="knn">
         <label for="knn">K-Nearest Neighbours</label>
-
+        <br>
         <input type="checkbox" name="model" value="baseline" id="baseline">
         <label for="baseline">Baseline</label>
-
+        <br>
         <input type="checkbox" name="model" value="slope_one" id="slope_one">
         <label for="slope_one">Slope One</label>
-
+        <br>
         <input type="checkbox" name="model" value="co_clustering" id="co_clustering">
         <label for="co_clustering">CoClustering</label>
-
+        <br>
         <input type="checkbox" id="selectAll">
-        <label for="selectAll">Select All</label>
-
-        <input type="number" id="k" name="k" min="10" , max="100">
+        <label for="selectAll">Select all models</label>
+        <!-- <br>
         <label for="k">K</label>
-
+        <input type="number" id="k" name="k" min="10" , max="100"> -->
+        <br>
+        <br>
+        <label for="nr_users">Number of users:</label>
         <input type="number" id="nr_users" name="nr_users" min="1" max="1000" value="20" step="1">
-        <label for="nr_users">Number of users</label>
-
+        <br>
+        <label for="rating">Rating:</label>
         <input type="number" id="rating" name="rating" min="1.0" max="5.0" value="5.0" step="0.5">
-        <label for="rating">Rating</label
+        <br><br>
+        <!-- <input type="radio" id="mae_rmse" name="comparison_method" value="mae_rmse"> -->
+        <!-- <label for="mae_rmse">MAE, RMSE</label> -->
 
-        <input type="radio" id="mae_rmse" name="comparison_method" value="mae_rmse">
-        <label for="mae_rmse">MAE, RMSE</label>
-
-        <input type="radio" id="precision_recall_f1" name="comparison_method" value="precision_recall_f1">
-        <label for="precision_recall_f1">Precision, Recall, F1</label>
+        <!-- <input type="radio" id="precision_recall_f1" name="comparison_method" value="precision_recall_f1">
+        <label for="precision_recall_f1">Precision, Recall, F1</label> -->
 
         <input type="submit" value="Evaluate" id="evaluate_button">
     </form>
 
 
-    <div id="loading-spinner" style="display: none">
-        Loading...
-    </div>
-
-    <div id="plots" style="display:block">
+    <div id="plots" style="display: block; position: relative;">
+        <div id="loading-spinner" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(254, 254, 254, 0.9); border: 2px solid #ccc;  padding: 30px; text-align: center; z-index: 2; width: 300px;">
+            Loading...
+        </div>
         <div id="robustness-mae-plot"></div>
         <div id="robustness-rmse-plot"></div>
     </div>
@@ -62,16 +63,24 @@
                 const nrUsers = document.getElementById("nr_users").value
                 const rating = document.getElementById("rating").value
                 const filteredModelsInPage = (() => {
-                    if (modelsInPage.every((input) => !input.checked)) {
-                        return modelsInPage.map((input) => input.value)
-                    }
                     return modelsInPage
                         .filter((input) => !!input.checked)
                         .map((input) => input.value);
                 })();
                 const response = await (async () => {
                     if (!filteredModelsInPage.length) {
-                        return await fetch(`/robustness/get_plots/${nrUsers}/${rating}/`);
+                        const randomIndexes = [];
+
+                        while (randomIndexes.length < 2) {
+                            const randomIndex = Math.floor(Math.random() * modelsInPage.length);
+                            if (!randomIndexes.includes(randomIndex)) {
+                                randomIndexes.push(randomIndex);
+                            }
+                        }
+
+                        const randomModels = randomIndexes.map(index => modelsInPage[index].value);
+
+                        return await fetch(`/robustness/get_plots/${nrUsers}/${rating}/${randomModels.join(",")}`);
                     }
                     return await fetch(
                         `/robustness/get_plots/${nrUsers}/${rating}/${filteredModelsInPage.join(",")}`
@@ -95,16 +104,21 @@
         });
 
         const plotModels = async () => {
-            document.getElementById("loading-spinner").style.display = "block";
-
+            const loadingSpinner = document.getElementById("loading-spinner");
+            loadingSpinner.style.display = "block"; // Display the spinner before fetching data
+        
             const data = await fetchModels();
-
-            document.getElementById("loading-spinner").style.display = "none";
-
-            if (!data) return;
-
+        
+            if (!data) {
+                loadingSpinner.style.display = "none"; // Hide the spinner in case of error
+                return;
+            }
+        
+            // Hide the spinner after fetching and plotting data
+            loadingSpinner.style.display = "none";
+        
             Plotly.newPlot("robustness-mae-plot", data.robustness_mae_plot);
-            Plotly.newPlot("robustness-rmse-plot", data.robustness_rmse_plot)
+            Plotly.newPlot("robustness-rmse-plot", data.robustness_rmse_plot);
         };
 
         window.addEventListener("load", async () => {
