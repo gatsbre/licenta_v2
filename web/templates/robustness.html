@@ -50,7 +50,7 @@
 
     <div id="plots" style="display: block; position: relative;">
         <div id="loading-window" class="loading-window">
-            Loading...
+            Fetching plot data...
         </div>
         <div id="robustness-mae-plot"></div>
         <div id="robustness-rmse-plot"></div>
@@ -62,6 +62,10 @@
                 const modelsInPage = [...document.getElementsByName("model")];
                 const nrUsers = document.getElementById("nr_users").value
                 const rating = document.getElementById("rating").value
+                const inputsInPage = [...document.getElementsByTagName("input")]
+                const disableAllInputs = (() => {
+                    inputsInPage.map((input) => input.disabled = true)
+                })();
                 const filteredModelsInPage = (() => {
                     return modelsInPage
                         .filter((input) => !!input.checked)
@@ -87,9 +91,15 @@
                     );
                 })();
                 const data = await response.json();
+                const enableAllInputs = (() => {
+                    inputsInPage.map((input) => input.disabled = false)
+                })();
                 return data;
             } catch (error) {
                 console.error("Error fetching plot data:", error);
+                const enableAllInputs = (() => {
+                    inputsInPage.map((input) => input.disabled = false)
+                })();
                 return null;
             }
         };
@@ -106,16 +116,16 @@
         const plotModels = async () => {
             const loadingSpinner = document.getElementById("loading-window");
             loadingSpinner.style.display = "block";
-        
+
             const data = await fetchModels();
-        
+
             if (!data) {
                 loadingSpinner.style.display = "none";
                 return;
             }
-        
+
             loadingSpinner.style.display = "none";
-        
+
             Plotly.newPlot("robustness-mae-plot", data.robustness_mae_plot);
             Plotly.newPlot("robustness-rmse-plot", data.robustness_rmse_plot);
         };

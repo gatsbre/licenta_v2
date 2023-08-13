@@ -13,28 +13,28 @@
 
     <input type="checkbox" name="model" value="svd" id="model">
     <label for="svd">SVD</label>
-
+    <br>
     <input type="checkbox" name="model" value="knn" id="model">
     <label for="knn">K-Nearest Neighbours</label>
-
+    <br>
     <input type="checkbox" name="model" value="baseline" id="model">
     <label for="baseline">Baseline</label>
-
+    <br>
     <input type="checkbox" name="model" value="slope_one" id="model">
     <label for="slope_one">Slope One</label>
-
+    <br>
     <input type="checkbox" name="model" value="co_clustering" id="model">
     <label for="co_clustering">CoClustering</label>
-
+    <br>
     <input type="checkbox" id="selectAll">
     <label for="selectAll">Select All</label>
-
+    <br><br>
     <input type="submit" value="Evaluate" id="evaluate_button">
   </form>
 
   <div id="plots" style="display:block">
     <div id="loading-window" class="loading-window">
-      Loading...
+      Fetching plot data...
     </div>
     <div id="mae-plot"></div>
     <div id="rmse-plot"></div>
@@ -46,6 +46,10 @@
     const fetchModels = async () => {
       try {
         const modelsInPage = [...document.getElementsByName("model")];
+        const inputsInPage = [...document.getElementsByTagName("input")]
+        const disableAllInputs = (() => {
+          inputsInPage.map((input) => input.disabled = true)
+        })();
         const filteredModelsInPage = (() => {
           if (modelsInPage.every((input) => !input.checked)) {
             return modelsInPage.map((input) => input.value)
@@ -63,9 +67,15 @@
           );
         })();
         const data = await response.json();
+        const enableAllInputs = (() => {
+          inputsInPage.map((input) => input.disabled = false)
+        })();
         return data;
       } catch (error) {
         console.error("Error fetching plot data:", error);
+        const enableAllInputs = (() => {
+          inputsInPage.map((input) => input.disabled = false)
+        })();
         return null;
       }
     };

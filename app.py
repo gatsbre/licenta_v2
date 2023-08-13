@@ -81,8 +81,6 @@ def get_precision_recall_f1_plots(models, k_value):
         ),
     )
 
-    print(max(precision_to_plot, key=lambda time: time["y"])["y"][0])
-
     fig_recall = go.Figure(data=recall_to_plot)
     fig_recall.update_layout(
         title="Recall",
@@ -138,4 +136,4 @@ def get_robustness_plots(models, nr_users, rating):
 
 
 if __name__ == "__main__":
-    app.run(port=8080, debug=True)
+    app.run(port=8080, debug=True, threaded=True)
