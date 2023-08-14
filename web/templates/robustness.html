@@ -1,114 +1,161 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <title>RSE: Robustness</title>
+    <head>
+        <title>RSE: Robustness</title>
 
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="/bootstrap/js/bootstrap.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="/bootstrap/js/bootstrap.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="/css/styles.css">
-    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css">
-</head>
+        <link rel="stylesheet" type="text/css" href="/css/styles.css">
+        <link rel="stylesheet" type="text/css"
+            href="/bootstrap/css/bootstrap.css">
+    </head>
 
-<body>
+    <body>
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark border-bottom border-body" data-bs-theme="dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">RSE</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="/mae_rmse">MAE + RMSE</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/precision_recall_f1">Precision, Recall, F1</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" href="/robustness">Robustness</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
-
-    <div class="accordion">
-        <div class="accordion-item ">
-            <h2 class="accordion-header bg-dark">
-                <button class="accordion-button collapsed bg-white text-dark" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                    Configurari pentru metrica de robustete
+        <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark
+            border-bottom border-body" data-bs-theme="dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">RSE</a>
+                <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
                 </button>
-            </h2>
-            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                    <form id="evaluationForm" action="/robustness" method="get">
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page"
+                                href="/mae_rmse">MAE + RMSE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/precision_recall_f1">Precision,
+                                Recall, F1</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/robustness">Robustness</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-                        <input type="checkbox" name="model" value="svd" id="svd">
-                        <label for="svd">SVD</label>
-                        <br>
-                        <input type="checkbox" name="model" value="knn" id="knn">
-                        <label for="knn">K-Nearest Neighbours</label>
-                        <br>
-                        <input type="checkbox" name="model" value="baseline" id="baseline">
-                        <label for="baseline">Baseline</label>
-                        <br>
-                        <input type="checkbox" name="model" value="slope_one" id="slope_one">
-                        <label for="slope_one">Slope One</label>
-                        <br>
-                        <input type="checkbox" name="model" value="co_clustering" id="co_clustering">
-                        <label for="co_clustering">CoClustering</label>
-                        <br>
-                        <input type="checkbox" id="selectAll">
-                        <label for="selectAll">Select all models</label>
-                        <!-- <br>
-        <label for="k">K</label>
-        <input type="number" id="k" name="k" min="10" , max="100"> -->
-                        <br>
-                        <br>
-                        <label for="nr_users">Number of users:</label>
-                        <input type="number" id="nr_users" name="nr_users" min="1" max="1000" value="20" step="1">
-                        <br>
-                        <label for="rating">Rating:</label>
-                        <input type="number" id="rating" name="rating" min="1.0" max="5.0" value="5.0" step="0.5">
-                        <br><br>
-                        <!-- <input type="radio" id="mae_rmse" name="comparison_method" value="mae_rmse"> -->
-                        <!-- <label for="mae_rmse">MAE, RMSE</label> -->
 
-                        <!-- <input type="radio" id="precision_recall_f1" name="comparison_method" value="precision_recall_f1">
-        <label for="precision_recall_f1">Precision, Recall, F1</label> -->
+        <div class="accordion">
+            <div class="accordion-item ">
+                <h2 class="accordion-header bg-dark">
+                    <button class="accordion-button collapsed bg-white
+                        text-dark" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="false"
+                        aria-controls="collapseOne">
+                        Configurari pentru metrica de robustete
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <form id="evaluationForm" action="/robustness"
+                            method="get">
 
-                        <input type="submit" value="Evaluate" id="evaluate_button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
-                    </form>
+                            <input type="checkbox" name="model" value="svd"
+                                id="svd">
+                            <label for="svd">SVD</label>
+
+                            <br>
+
+                            <input type="checkbox" name="model" value="knn"
+                                id="knn">
+                            <label for="knn">K-Nearest Neighbours</label>
+
+                            <br>
+
+                            <input type="checkbox" name="model" value="baseline"
+                                id="baseline">
+                            <label for="baseline">Baseline</label>
+
+                            <br>
+
+                            <input type="checkbox" name="model"
+                                value="slope_one" id="slope_one">
+                            <label for="slope_one">Slope One</label>
+
+                            <br>
+
+                            <input type="checkbox" name="model"
+                                value="co_clustering" id="co_clustering">
+                            <label for="co_clustering">CoClustering</label>
+
+                            <br>
+
+                            <input type="checkbox" id="selectAll">
+                            <label for="selectAll">Select all models</label>
+                            <br>
+
+                            <label for="k">K</label>
+                            <input type="number" id="k" name="k" min="5" ,
+                                max="100" value="10">
+
+                            <br>
+                            <br>
+
+                            <label for="nr_users">Number of users:</label>
+                            <input type="number" id="nr_users" name="nr_users"
+                                min="1" max="1000" value="20" step="1">
+
+                            <br>
+
+                            <label for="rating">Rating:</label>
+                            <input type="number" id="rating" name="rating"
+                                min="1.0" max="5.0" value="5.0" step="0.5">
+
+                            <br>
+                            <br>
+
+                            <input type="radio" id="mae_rmse"
+                                name="comparison_method" value="mae_rmse"
+                                checked>
+                            <label for="mae_rmse">MAE, RMSE</label>
+
+                            <input type="radio" id="precision_recall_f1"
+                                name="comparison_method"
+                                value="prf">
+                            <label for="precision_recall_f1">Precision, Recall,
+                                F1</label>
+
+                            <input type="submit" value="Evaluate"
+                                id="evaluate_button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne">
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
 
-    <div id="plots" style="display:block">
-        <div id="loading-window" class="loading-window">
-          Fetching plot data
-          <br><br>
-          <div class="spinner-grow"></div>
+        <div id="plots" style="display:block">
+            <div id="loading-window" class="loading-window">
+                Fetching plot data
+                <br><br>
+                <div class="spinner-grow"></div>
+            </div>
+            <div id="robustness-plot-1"></div>
+            <div id="robustness-plot-2"></div>
+            <div id="robustness-plot-3"></div>
         </div>
-        <div id="robustness-mae-plot"></div>
-        <div id="robustness-rmse-plot"></div>
-    </div>
 
-    <script>
+        <script>
+        var comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
         const fetchModels = async () => {
             try {
+                comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
                 const modelsInPage = [...document.getElementsByName("model")];
                 const nrUsers = document.getElementById("nr_users").value
                 const rating = parseFloat(document.getElementById("rating").value).toFixed(1)
                 const inputsInPage = [...document.getElementsByTagName("input")]
+                const kValue = document.getElementById("k").value;
                 const disableAllInputs = (() => {
                     inputsInPage.map((input) => input.disabled = true)
                 })();
@@ -130,10 +177,10 @@
 
                         const randomModels = randomIndexes.map(index => modelsInPage[index].value);
 
-                        return await fetch(`/robustness/get_plots/${nrUsers}/${rating}/${randomModels.join(",")}`);
+                        return await fetch(`/robustness/get_plots/${nrUsers}/${rating}/${comparisonMethod}/${kValue}/${randomModels.join(",")}`);
                     }
                     return await fetch(
-                        `/robustness/get_plots/${nrUsers}/${rating}/${filteredModelsInPage.join(",")}`
+                        `/robustness/get_plots/${nrUsers}/${rating}/${comparisonMethod}/${kValue}/${filteredModelsInPage.join(",")}`
                     );
                 })();
                 const data = await response.json();
@@ -172,8 +219,14 @@
 
             loadingSpinner.style.display = "none";
 
-            Plotly.newPlot("robustness-mae-plot", data.robustness_mae_plot);
-            Plotly.newPlot("robustness-rmse-plot", data.robustness_rmse_plot);
+            Plotly.newPlot("robustness-plot-1", data.robustness_plot_1);
+            Plotly.newPlot("robustness-plot-2", data.robustness_plot_2);
+            if(comparisonMethod == "prf"){
+                document.getElementById("robustness-plot-3").style.display = "block";
+                Plotly.newPlot("robustness-plot-3", data.robustness_plot_3);
+            }
+            else if(comparisonMethod == "mae_rmse")
+                document.getElementById("robustness-plot-3").style.display = "none";
         };
 
         window.addEventListener("load", async () => {
@@ -187,6 +240,6 @@
                 await plotModels();
             });
     </script>
-</body>
+    </body>
 
 </html>

@@ -79,16 +79,22 @@ def post_precision_recall_f1_model_k():
 def post_robustness():
     try:
         request_data = request.json
+
         model_name = request_data.get("model_name")
         nr_users = int(request_data.get("nr_users"))
         rating = float(request_data.get("rating"))
         random_state_value = int(request_data.get("random_state_value"))
         comparison_method = request_data.get("comparison_method")
-        k_value = request_data.get("k_value")
+        k_value = int(request_data.get("k"))
+
+        if comparison_method is None:
+            raise KeyError(
+                "comparison_method needs to be specified in the request body"
+            )
 
         if comparison_method == "prf" and k_value is None:
-            raise ValueError(
-                "K needs to be specified for the precision, recall and f1 metrics"
+            raise KeyError(
+                "k needs to be specified for the precision, recall and f1 metrics"
             )
 
     except Exception as e:

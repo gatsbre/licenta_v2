@@ -17,14 +17,16 @@ def get_model_instance(model_name):
     return model_factories[model_name]()
 
 
-def get_plots(selected_models, function, k=0, nr_users=0, rating=0):
+def get_plots(
+    selected_models, function, k=0, nr_users=0, rating=0, comparison_method=""
+):
     plots = []
 
     random_state_value = random.randint(
         0, 2**32 - 1
     )  # the interval of the random_state
 
-    if k:
+    if k and not (nr_users and rating):
         for model_name in selected_models:
             for i, score_bar in enumerate(function(model_name, random_state_value, k)):
                 try:
@@ -37,14 +39,29 @@ def get_plots(selected_models, function, k=0, nr_users=0, rating=0):
     elif nr_users and rating:
         for model_name in selected_models:
             for i, score_bar in enumerate(
-                function(model_name, random_state_value, nr_users, rating)
+                function(
+                    model_name,
+                    random_state_value,
+                    nr_users,
+                    rating,
+                    comparison_method,
+                    k,
+                )
             ):
-                try:
-                    if not plots[i % 2]:
-                        plots[i % 2] = []
-                except IndexError:
-                    plots.append([])
-                plots[i % 2].append(score_bar)
+                if comparison_method == "mae_rmse":
+                    try:
+                        if not plots[i % 2]:
+                            plots[i % 2] = []
+                    except IndexError:
+                        plots.append([])
+                    plots[i % 2].append(score_bar)
+                elif comparison_method == "prf":
+                    try:
+                        if not plots[i % 3]:
+                            plots[i % 3] = []
+                    except IndexError:
+                        plots.append([])
+                    plots[i % 3].append(score_bar)
     else:
         for model_name in selected_models:
             for i, score_bar in enumerate(function(model_name, random_state_value)):
@@ -161,7 +178,9 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
     return precision_bar, recall_bar, f1_bar
 
 
-def get_robustness_score_bars(model_name, random_state_value, nr_users, rating):
+def get_robustness_score_bars(
+    model_name, random_state_value, nr_users, rating, comparison_method="mae_rmse", k=10
+):
     bar_width = 0.1
 
     robustness_post_data = {
@@ -169,11 +188,14 @@ def get_robustness_score_bars(model_name, random_state_value, nr_users, rating):
         "random_state_value": random_state_value,
         "nr_users": nr_users,
         "rating": rating,
+        "comparison_method": comparison_method,
+        "k": k,
     }
 
     base_post_data = {
         "model_name": model_name,
         "random_state_value": random_state_value,
+        "k": k,
     }
 
     response = requests.post(
@@ -181,71 +203,175 @@ def get_robustness_score_bars(model_name, random_state_value, nr_users, rating):
     )
     robustness_response_data = response.json()
 
-    response = requests.post(
-        "http://localhost:8000/api/v1/mae_rmse", json=base_post_data
-    )
-    base_response_data = response.json()
+    if comparison_method == "mae_rmse":
+        response = requests.post(
+            "http://localhost:8000/api/v1/mae_rmse", json=base_post_data
+        )
+        base_response_data = response.json()
 
-    robustness_mae_score = robustness_response_data["mae_score"]
-    robustness_rmse_score = robustness_response_data["rmse_score"]
-    base_mae_score = base_response_data["mae_score"]
-    base_rmse_score = base_response_data["rmse_score"]
+        robustness_mae_score = robustness_response_data["mae_score"]
+        robustness_rmse_score = robustness_response_data["rmse_score"]
+        base_mae_score = base_response_data["mae_score"]
+        base_rmse_score = base_response_data["rmse_score"]
 
-    robustness_mae_bar = go.Bar(
-        name=f"{model_name}",
-        x=["MAE"],
-        y=[robustness_mae_score],
-        width=bar_width,
-        text=[
-            f"{model_name} <br>After adding users <br> MAE: {round(robustness_mae_score, 6)}"
-        ],
-        textposition="inside",
-        insidetextanchor="middle",
-        hoverinfo="text",
-        hovertext=f"Model: {model_name} <br>After adding users <br>MAE: {robustness_mae_score}",
-    )
-    robustness_rmse_bar = go.Bar(
-        name=f"{model_name}",
-        x=["RMSE"],
-        y=[robustness_rmse_score],
-        width=bar_width,
-        text=[
-            f"{model_name} <br>After adding users <br> RMSE: {round(robustness_rmse_score, 6)}"
-        ],
-        textposition="inside",
-        insidetextanchor="middle",
-        hoverinfo="text",
-        hovertext=f"Model: {model_name} <br>After adding users <br>RMSE: {robustness_rmse_score}",
-    )
+        robustness_mae_bar = go.Bar(
+            name=f"{model_name}",
+            x=["MAE"],
+            y=[robustness_mae_score],
+            width=bar_width,
+            text=[
+                f"{model_name} <br>After adding users <br> MAE: {round(robustness_mae_score, 6)}"
+            ],
+            textposition="inside",
+            insidetextanchor="middle",
+            hoverinfo="text",
+            hovertext=f"Model: {model_name} <br>After adding users <br>MAE: {robustness_mae_score}",
+        )
+        robustness_rmse_bar = go.Bar(
+            name=f"{model_name}",
+            x=["RMSE"],
+            y=[robustness_rmse_score],
+            width=bar_width,
+            text=[
+                f"{model_name} <br>After adding users <br> RMSE: {round(robustness_rmse_score, 6)}"
+            ],
+            textposition="inside",
+            insidetextanchor="middle",
+            hoverinfo="text",
+            hovertext=f"Model: {model_name} <br>After adding users <br>RMSE: {robustness_rmse_score}",
+        )
 
-    base_mae_bar = go.Bar(
-        name=f"{model_name}",
-        x=["MAE"],
-        y=[base_mae_score],
-        width=bar_width,
-        text=[
-            f"{model_name} <br>Before adding users <br> Base MAE: {round(base_mae_score, 6)}"
-        ],
-        textposition="inside",
-        insidetextanchor="middle",
-        hoverinfo="text",
-        hovertext=f"Model: {model_name} <br>Before adding users <br>MAE: {base_mae_score}",
-    )
-    base_rmse_bar = go.Bar(
-        name=f"{model_name}",
-        x=["RMSE"],
-        y=[base_rmse_score],
-        width=bar_width,
-        text=[
-            f"{model_name} <br>Before adding users <br> Base RMSE: {round(base_rmse_score, 6)}"
-        ],
-        textposition="inside",
-        insidetextanchor="middle",
-        hoverinfo="text",
-        hovertext=f"Model: {model_name} <br>Before adding users <br>RMSE: {base_rmse_score}",
-    )
+        base_mae_bar = go.Bar(
+            name=f"{model_name}",
+            x=["MAE"],
+            y=[base_mae_score],
+            width=bar_width,
+            text=[
+                f"{model_name} <br>Before adding users <br> Base MAE: {round(base_mae_score, 6)}"
+            ],
+            textposition="inside",
+            insidetextanchor="middle",
+            hoverinfo="text",
+            hovertext=f"Model: {model_name} <br>Before adding users <br>MAE: {base_mae_score}",
+        )
+        base_rmse_bar = go.Bar(
+            name=f"{model_name}",
+            x=["RMSE"],
+            y=[base_rmse_score],
+            width=bar_width,
+            text=[
+                f"{model_name} <br>Before adding users <br> Base RMSE: {round(base_rmse_score, 6)}"
+            ],
+            textposition="inside",
+            insidetextanchor="middle",
+            hoverinfo="text",
+            hovertext=f"Model: {model_name} <br>Before adding users <br>RMSE: {base_rmse_score}",
+        )
 
-    return robustness_mae_bar, robustness_rmse_bar, base_mae_bar, base_rmse_bar
+        return robustness_mae_bar, robustness_rmse_bar, base_mae_bar, base_rmse_bar
+    elif comparison_method == "prf":
+        response = requests.post(
+            "http://localhost:8000/api/v1/precision_recall_f1", json=base_post_data
+        )
+        base_response_data = response.json()
+
+        robustness_precision_score = robustness_response_data["precision_score"]
+        robustness_recall_score = robustness_response_data["recall_score"]
+        robustness_f1_score = robustness_response_data["f1_score"]
+        base_precision_score = base_response_data["precision_score"]
+        base_recall_score = base_response_data["recall_score"]
+        base_f1_score = base_response_data["f1_score"]
+
+        robustness_precision_bar = go.Bar(
+            name=f"{model_name}",
+            x=["MAE"],
+            y=[robustness_precision_score],
+            width=bar_width,
+            text=[
+                f"{model_name} <br>After adding users <br> Precision: {round(robustness_precision_score, 6)}"
+            ],
+            textposition="inside",
+            insidetextanchor="middle",
+            hoverinfo="text",
+            hovertext=f"Model: {model_name} <br>After adding users <br>Precision: {robustness_precision_score}",
+        )
+        robustness_recall_bar = go.Bar(
+            name=f"{model_name}",
+            x=["RMSE"],
+            y=[robustness_recall_score],
+            width=bar_width,
+            text=[
+                f"{model_name} <br>After adding users <br> Recall: {round(robustness_recall_score, 6)}"
+            ],
+            textposition="inside",
+            insidetextanchor="middle",
+            hoverinfo="text",
+            hovertext=f"Model: {model_name} <br>After adding users <br>Recall: {robustness_recall_score}",
+        )
+
+        robustness_f1_bar = go.Bar(
+            name=f"{model_name}",
+            x=["RMSE"],
+            y=[robustness_f1_score],
+            width=bar_width,
+            text=[
+                f"{model_name} <br>After adding users <br> F1: {round(robustness_f1_score, 6)}"
+            ],
+            textposition="inside",
+            insidetextanchor="middle",
+            hoverinfo="text",
+            hovertext=f"Model: {model_name} <br>After adding users <br>F1: {robustness_f1_score}",
+        )
+
+        base_precision_bar = go.Bar(
+            name=f"{model_name}",
+            x=["MAE"],
+            y=[base_precision_score],
+            width=bar_width,
+            text=[
+                f"{model_name} <br>Before adding users <br> Base Precision: {round(base_precision_score, 6)}"
+            ],
+            textposition="inside",
+            insidetextanchor="middle",
+            hoverinfo="text",
+            hovertext=f"Model: {model_name} <br>Before adding users <br>Precision: {base_precision_score}",
+        )
+        base_recall_bar = go.Bar(
+            name=f"{model_name}",
+            x=["RMSE"],
+            y=[base_recall_score],
+            width=bar_width,
+            text=[
+                f"{model_name} <br>Before adding users <br> Base Recall: {round(base_recall_score, 6)}"
+            ],
+            textposition="inside",
+            insidetextanchor="middle",
+            hoverinfo="text",
+            hovertext=f"Model: {model_name} <br>Before adding users <br>Recall: {base_recall_score}",
+        )
+
+        base_f1_bar = go.Bar(
+            name=f"{model_name}",
+            x=["RMSE"],
+            y=[base_f1_score],
+            width=bar_width,
+            text=[
+                f"{model_name} <br>Before adding users <br> Base Recall: {round(base_f1_score, 6)}"
+            ],
+            textposition="inside",
+            insidetextanchor="middle",
+            hoverinfo="text",
+            hovertext=f"Model: {model_name} <br>Before adding users <br>Recall: {base_f1_score}",
+        )
+
+        return (
+            robustness_precision_bar,
+            robustness_recall_bar,
+            robustness_f1_bar,
+            base_precision_bar,
+            base_recall_bar,
+            base_f1_bar,
+        )
 
 
 def get_top_k_percent(sorted_list, k):

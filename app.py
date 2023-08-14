@@ -109,30 +109,62 @@ def get_precision_recall_f1_plots(models, k_value):
 
 
 @app.route(
-    "/robustness/get_plots/<int:nr_users>/<float:rating>/<models>", methods=["GET"]
+    "/robustness/get_plots/<int:nr_users>/<float:rating>/<comparison_method>/<k>/<models>",
+    methods=["GET"],
 )
-def get_robustness_plots(models, nr_users, rating):
+def get_robustness_plots(models, nr_users, rating, comparison_method, k):
     selected_models = models.split(",")
 
-    mae_to_plot, rmse_to_plots = utils.get_plots(
-        selected_models,
-        utils.get_robustness_score_bars,
-        nr_users=nr_users,
-        rating=rating,
-    )
+    if comparison_method == "mae_rmse":
+        mae_to_plot, rmse_to_plot = utils.get_plots(
+            selected_models,
+            utils.get_robustness_score_bars,
+            nr_users=nr_users,
+            rating=rating,
+            comparison_method=comparison_method,
+            k=k,
+        )
 
-    fig_robustness_mae = go.Figure(data=mae_to_plot)
-    fig_robustness_mae.update_layout(title="Robustness MAE", barmode="group")
+        fig_robustness_mae = go.Figure(data=mae_to_plot)
+        fig_robustness_mae.update_layout(title="Robustness MAE", barmode="group")
 
-    fig_robustness_rmse = go.Figure(data=rmse_to_plots)
-    fig_robustness_rmse.update_layout(title="Robustness RMSE", barmode="group")
+        fig_robustness_rmse = go.Figure(data=rmse_to_plot)
+        fig_robustness_rmse.update_layout(title="Robustness RMSE", barmode="group")
 
-    return jsonify(
-        {
-            "robustness_mae_plot": fig_robustness_mae.to_plotly_json(),
-            "robustness_rmse_plot": fig_robustness_rmse.to_plotly_json(),
-        }
-    )
+        return jsonify(
+            {
+                "robustness_plot_1": fig_robustness_mae.to_plotly_json(),
+                "robustness_plot_2": fig_robustness_rmse.to_plotly_json(),
+            }
+        )
+    elif comparison_method == "prf":
+        precision_to_plot, recall_to_plot, f1_to_plot = utils.get_plots(
+            selected_models,
+            utils.get_robustness_score_bars,
+            nr_users=nr_users,
+            rating=rating,
+            comparison_method=comparison_method,
+            k=k,
+        )
+
+        fig_robustness_precision = go.Figure(data=precision_to_plot)
+        fig_robustness_precision.update_layout(
+            title="Robustness Precision", barmode="group"
+        )
+
+        fig_robustness_recall = go.Figure(data=recall_to_plot)
+        fig_robustness_recall.update_layout(title="Robustness Recall", barmode="group")
+
+        fig_robustness_f1 = go.Figure(data=f1_to_plot)
+        fig_robustness_f1.update_layout(title="Robustness F1", barmode="group")
+
+        return jsonify(
+            {
+                "robustness_plot_1": fig_robustness_precision.to_plotly_json(),
+                "robustness_plot_2": fig_robustness_recall.to_plotly_json(),
+                "robustness_plot_3": fig_robustness_f1.to_plotly_json(),
+            }
+        )
 
 
 if __name__ == "__main__":
