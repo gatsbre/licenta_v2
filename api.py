@@ -83,9 +83,26 @@ def post_robustness():
         nr_users = int(request_data.get("nr_users"))
         rating = float(request_data.get("rating"))
         random_state_value = int(request_data.get("random_state_value"))
+        comparison_method = request_data.get("comparison_method")
+        k_value = request_data.get("k_value")
+
+        if comparison_method == "prf" and k_value is None:
+            raise ValueError(
+                "K needs to be specified for the precision, recall and f1 metrics"
+            )
 
     except Exception as e:
         return jsonify({"Error": str(e)}), 400
+
+    if comparison_method == "prf" and k_value is None:
+        return (
+            jsonify(
+                {
+                    "Error": f"K needs to be specified for the precision, recall and f1 metrics"
+                }
+            ),
+            400,
+        )
 
     reader = Reader(rating_scale=(1, 5))
     data = Dataset.load_builtin("ml-100k")
@@ -134,17 +151,25 @@ def post_robustness():
 
     predictions = model.test(test_data)
 
-    mae_score = mae(predictions, verbose=False)
-    rmse_score = rmse(predictions, verbose=False)
+    response_body = {"rating": rating, "nr_users": nr_users}
 
-    return jsonify(
-        {
-            "mae_score": mae_score,
-            "rmse_score": rmse_score,
-            "nr_users": nr_users,
-            "rating": rating,
-        }
-    )
+    if comparison_method == "mae_rmse":
+        mae_score = mae(predictions, verbose=False)
+        rmse_score = rmse(predictions, verbose=False)
+
+        response_body["mae_score"] = mae_score
+        response_body["rmse_score"] = rmse_score
+
+    elif comparison_method == "prf":
+        precision_score, recall_score, f1_score = eval_func.precision_recall_f1(
+            test_data, predictions, k_value
+        )
+
+        response_body["precision_score"] = precision_score
+        response_body["recall_score"] = recall_score
+        response_body["f1_score"] = f1_score
+
+    return jsonify(response_body)
 
 
 if __name__ == "__main__":
