@@ -12,7 +12,7 @@ app = Flask(
 
 @app.route("/")
 def show_main():
-    return render_template("main.html")
+    return render_template("mae_rmse.html")
 
 
 @app.route("/mae_rmse")

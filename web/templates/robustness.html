@@ -91,14 +91,8 @@
 
                             <input type="checkbox" id="selectAll">
                             <label for="selectAll">Select all models</label>
-
+                            
                             <br>
-                            <br>
-
-                            <label for="k">K</label>
-                            <input type="number" id="k" name="k" min="5" ,
-                                max="100" value="10">
-
                             <br>
 
                             <label for="nr_users">Number of users:</label>
@@ -128,6 +122,14 @@
                                     Recall,
                                     F1</label>
                             </div>
+                            <br>
+                            <div id="comparison_inputs">
+                                <label for="k">K</label>
+                            <input type="number" id="k" name="k" min="5" ,
+                                max="100" value="10">
+                            </div>
+                            <br>
+                            <br>
                             <input type="submit" value="Evaluate"
                                 id="evaluate_button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseOne">
@@ -151,10 +153,9 @@
         </div>
 
         <script>
-        var comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
         const fetchModels = async () => {
             try {
-                comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
+                const comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
                 const modelsInPage = [...document.getElementsByName("model")];
                 const nrUsers = document.getElementById("nr_users").value
                 const rating = parseFloat(document.getElementById("rating").value).toFixed(1)
@@ -212,6 +213,7 @@
 
         const plotModels = async () => {
             const loadingSpinner = document.getElementById("loading-window");
+            const comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
             loadingSpinner.style.display = "block";
 
             const data = await fetchModels();
