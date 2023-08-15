@@ -100,17 +100,6 @@ def post_robustness():
     except Exception as e:
         return jsonify({"Error": str(e)}), 400
 
-    if comparison_method == "prf" and k_value is None:
-        return (
-            jsonify(
-                {
-                    "Error": f"K needs to be specified for the precision, recall and f1 metrics"
-                }
-            ),
-            400,
-        )
-
-    reader = Reader(rating_scale=(1, 5))
     data = Dataset.load_builtin("ml-100k")
 
     train_data, test_data = train_test_split(
@@ -119,6 +108,7 @@ def post_robustness():
 
     train_data = pd.DataFrame(train_data.build_testset())
     data = pd.DataFrame(data.build_full_trainset().all_ratings())
+    reader = Reader(rating_scale=(data[2].min(), data[2].max()))
 
     if rating > data[2].max() or rating < data[2].min():
         return jsonify(
@@ -176,6 +166,73 @@ def post_robustness():
         response_body["f1_score"] = f1_score
 
     return jsonify(response_body)
+
+
+@app.route("/api/v1/scarcity", methods=["POST"])
+def post_scarcity():
+    try:
+        request_data = request.json
+
+        model_name = request_data.get("model_name")
+        random_state_value = int(request_data.get("random_state_value"))
+        # comparison_method = request_data.get("comparison_method")
+        k_value = int(request_data.get("k"))
+        model_feeding_percent = int(request_data.get("model_feeding_percent"))
+
+        # if comparison_method is None:
+        #     raise KeyError(
+        #         "comparison_method needs to be specified in the request body"
+        #     )
+
+        # if comparison_method == "prf" and k_value is None:
+        #     raise KeyError(
+        #         "k needs to be specified for the precision, recall and f1 metrics"
+        #     )
+    except Exception as e:
+        return jsonify({"Error": str(e)}), 400
+
+    table = []
+    data = Dataset.load_builtin("ml-100k")
+
+    trainset, testset = train_test_split(
+        data, train_size=0.8, random_state=random_state_value
+    )
+
+    model = utils.get_model_instance(model_name)
+
+    trainset_df = pd.DataFrame(trainset.build_testset())
+
+    reader = Reader(rating_scale=(trainset_df[2].min(), trainset_df[2].max()))
+
+    len_trainset_df = len(trainset_df)
+
+    for i in range(
+        len_trainset_df // model_feeding_percent,
+        len_trainset_df // model_feeding_percent + len_trainset_df,
+        len_trainset_df // model_feeding_percent,
+    ):
+        partial_trainset = Dataset.load_from_df(trainset_df.head(i), reader)
+        partial_trainset = partial_trainset.build_full_trainset()
+        model.fit(partial_trainset)
+        predictions = model.test(testset)
+
+        predictions_df = pd.DataFrame(predictions)
+
+        precision_score, recall_score, f1_score = eval_func.precision_recall_f1(
+            testset, predictions, k_value
+        )
+        new_line = {
+            "mae": mae(predictions, verbose=False),
+            "rmse": rmse(predictions, verbose=False),
+            "precision_score": precision_score,
+            "recall_score": recall_score,
+            "f1_score": f1_score,
+            "nr_items": i,
+        }
+
+        table.append(new_line)
+
+    return jsonify(table)
 
 
 if __name__ == "__main__":
