@@ -18,7 +18,13 @@ def get_model_instance(model_name):
 
 
 def get_plots(
-    selected_models, function, k=0, nr_users=0, rating=0, comparison_method=""
+    selected_models,
+    function,
+    k=0,
+    nr_users=0,
+    rating=0,
+    comparison_method="",
+    model_feeding_percent=0,
 ):
     plots = []
 
@@ -26,7 +32,41 @@ def get_plots(
         0, 2**32 - 1
     )  # the interval of the random_state
 
-    if k and not (nr_users and rating):
+    # scarcity
+    if model_feeding_percent:
+        if comparison_method == "mae_rmse":
+            for i, trace in enumerate(
+                function(
+                    selected_models,
+                    random_state_value,
+                    comparison_method,
+                    model_feeding_percent,
+                )
+            ):
+                try:
+                    if not plots[i % 2]:
+                        plots[i % 2] = []
+                except IndexError:
+                    plots.append([])
+                plots[i % 2].append(trace)
+        elif comparison_method == "prf":
+            for i, trace in enumerate(
+                function(
+                    selected_models,
+                    random_state_value,
+                    comparison_method,
+                    model_feeding_percent,
+                )
+            ):
+                try:
+                    if not plots[i % 3]:
+                        plots[i % 3] = []
+                except IndexError:
+                    plots.append([])
+                plots[i % 3].append(trace)
+
+    # precision, recall, f1
+    if k and not (nr_users and rating or model_feeding_percent):
         for model_name in selected_models:
             for i, score_bar in enumerate(function(model_name, random_state_value, k)):
                 try:
@@ -35,7 +75,7 @@ def get_plots(
                 except IndexError:
                     plots.append([])
                 plots[i].append(score_bar)
-
+    # robustness
     elif nr_users and rating:
         for model_name in selected_models:
             for i, score_bar in enumerate(
@@ -62,7 +102,8 @@ def get_plots(
                     except IndexError:
                         plots.append([])
                     plots[i % 3].append(score_bar)
-    else:
+    # mae, rmse
+    elif model_feeding_percent == 0:
         for model_name in selected_models:
             for i, score_bar in enumerate(function(model_name, random_state_value)):
                 try:
@@ -372,6 +413,78 @@ def get_robustness_score_bars(
             base_recall_bar,
             base_f1_bar,
         )
+
+
+def get_scarcity_mae_rmse(
+    model_name,
+    random_state_value,
+    comparison_method="mae_rmse",
+    model_feeding_percent=10,
+):
+    scarcity_mae_rmse_data = {
+        "model_name": model_name,
+        "random_state_value": random_state_value,
+        "comparison_method": comparison_method,
+        "model_feeding_percent": model_feeding_percent,
+        "k": 0,
+    }
+
+    response = requests.post(
+        "http://localhost:8000/api/v1/scarcity", json=scarcity_mae_rmse_data
+    )
+    response_data = response.json()
+
+    mae_list = []
+    rmse_list = []
+    nr_items_list = []
+
+    for step in response_data:
+        mae_list.append(step["mae_score"])
+        rmse_list.append(step["rmse_score"])
+        nr_items_list.append(step["nr_items"])
+
+    mae_trace = go.Scatter(x=nr_items_list, y=mae_list, name="MAE")
+    rmse_trace = go.Scatter(x=nr_items_list, y=rmse_list, name="RMSE")
+
+    return mae_trace, rmse_trace
+
+
+def get_scarcity_prf(
+    model_name,
+    random_state_value,
+    comparison_method="prf",
+    model_feeding_percent=10,
+    k_value=10,
+):
+    scarcity_prf_data = {
+        "model_name": model_name,
+        "random_state_value": random_state_value,
+        "comparison_method": comparison_method,
+        "model_feeding_percent": model_feeding_percent,
+        "k": k_value,
+    }
+
+    response = requests.post(
+        "http://localhost:8000/api/v1/scarcity", json=scarcity_prf_data
+    )
+    response_data = response.json()
+
+    precision_list = []
+    recall_list = []
+    f1_list = []
+    nr_items_list = []
+
+    for step in response_data:
+        precision_list.append(step["precision_score"])
+        recall_list.append(step["recall_score"])
+        f1_list.append(step["f1_score"])
+        nr_items_list.append(step["nr_items"])
+
+    precision_trace = go.Scatter(x=nr_items_list, y=precision_list, name="Precision")
+    recall_trace = go.Scatter(x=nr_items_list, y=recall_list, name="Recall")
+    f1_trace = go.Scatter(x=nr_items_list, y=f1_list, name="F1")
+
+    return precision_trace, recall_trace, f1_trace
 
 
 def get_top_k_percent(sorted_list, k):

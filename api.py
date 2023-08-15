@@ -175,19 +175,19 @@ def post_scarcity():
 
         model_name = request_data.get("model_name")
         random_state_value = int(request_data.get("random_state_value"))
-        # comparison_method = request_data.get("comparison_method")
+        comparison_method = request_data.get("comparison_method")
         k_value = int(request_data.get("k"))
         model_feeding_percent = int(request_data.get("model_feeding_percent"))
 
-        # if comparison_method is None:
-        #     raise KeyError(
-        #         "comparison_method needs to be specified in the request body"
-        #     )
+        if comparison_method is None:
+            raise KeyError(
+                "comparison_method needs to be specified in the request body"
+            )
 
-        # if comparison_method == "prf" and k_value is None:
-        #     raise KeyError(
-        #         "k needs to be specified for the precision, recall and f1 metrics"
-        #     )
+        if comparison_method == "prf" and k_value is None:
+            raise KeyError(
+                "k needs to be specified for the precision, recall and f1 metrics"
+            )
     except Exception as e:
         return jsonify({"Error": str(e)}), 400
 
@@ -216,19 +216,22 @@ def post_scarcity():
         model.fit(partial_trainset)
         predictions = model.test(testset)
 
-        predictions_df = pd.DataFrame(predictions)
-
-        precision_score, recall_score, f1_score = eval_func.precision_recall_f1(
-            testset, predictions, k_value
-        )
         new_line = {
-            "mae": mae(predictions, verbose=False),
-            "rmse": rmse(predictions, verbose=False),
-            "precision_score": precision_score,
-            "recall_score": recall_score,
-            "f1_score": f1_score,
             "nr_items": i,
         }
+
+        if comparison_method == "prf":
+            precision_score, recall_score, f1_score = eval_func.precision_recall_f1(
+                testset, predictions, k_value
+            )
+
+            new_line["precision_score"] = precision_score
+            new_line["recall_score"] = recall_score
+            new_line["f1_score"] = f1_score
+
+        elif comparison_method == "mae_rmse":
+            new_line["mae_score"] = mae(predictions, verbose=False)
+            new_line["rmse_score"] = rmse(predictions, verbose=False)
 
         table.append(new_line)
 

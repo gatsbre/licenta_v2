@@ -20,14 +20,19 @@ def show_mae_rmse_graph():
     return render_template("mae_rmse.html")
 
 
+@app.route("/precision_recall_f1")
+def show_precision_f1_recall():
+    return render_template("precision_recall_f1.html")
+
+
 @app.route("/robustness")
 def show_robustness_graph():
     return render_template("robustness.html")
 
 
-@app.route("/precision_recall_f1")
-def show_precision_f1_recall():
-    return render_template("precision_recall_f1.html")
+@app.route("/scarcity")
+def show_scarcity_graph():
+    return render_template("scarcity.html")
 
 
 @app.route("/mae_rmse/get_plots/<models>/", methods=["GET"])
@@ -163,6 +168,58 @@ def get_robustness_plots(models, nr_users, rating, comparison_method, k):
                 "robustness_plot_1": fig_robustness_precision.to_plotly_json(),
                 "robustness_plot_2": fig_robustness_recall.to_plotly_json(),
                 "robustness_plot_3": fig_robustness_f1.to_plotly_json(),
+            }
+        )
+
+
+@app.route(
+    "/scarcity/get_plots/<model>/<model_feeding_percent>/<comparison_method>/<k>",
+    methods=["GET"],
+)
+def get_scarcity_plots(model, model_feeding_percent, comparison_method, k=10):
+    if comparison_method == "mae_rmse":
+        mae_to_plot, rmse_to_plot = utils.get_plots(
+            selected_models=model,
+            function=utils.get_scarcity_mae_rmse,
+            comparison_method=comparison_method,
+            model_feeding_percent=model_feeding_percent,
+        )
+
+        fig_scarcity_mae = go.Figure(data=mae_to_plot)
+        fig_scarcity_mae.update_layout(title="Scarcity MAE")
+
+        fig_scarcity_rmse = go.Figure(data=rmse_to_plot)
+        fig_scarcity_rmse.update_layout(title="Scarcity RMSE")
+
+        return jsonify(
+            {
+                "scarcity_plot_1": fig_scarcity_mae.to_plotly_json(),
+                "scarcity_plot_2": fig_scarcity_rmse.to_plotly_json(),
+            }
+        )
+    elif comparison_method == "prf":
+        precision_to_plot, recall_to_plot, f1_to_plot = utils.get_plots(
+            selected_models=model,
+            function=utils.get_scarcity_prf,
+            comparison_method=comparison_method,
+            model_feeding_percent=model_feeding_percent,
+            k=k,
+        )
+
+        fig_scarcity_precision = go.Figure(data=precision_to_plot)
+        fig_scarcity_precision.update_layout(title="Scarcity Precision")
+
+        fig_scarcity_recall = go.Figure(data=recall_to_plot)
+        fig_scarcity_recall.update_layout(title="Scarcity Recall")
+
+        fig_scarcity_f1 = go.Figure(data=f1_to_plot)
+        fig_scarcity_f1.update_layout(title="Scarcity F1")
+
+        return jsonify(
+            {
+                "scarcity_plot_1": fig_scarcity_precision.to_plotly_json(),
+                "scarcity_plot_2": fig_scarcity_recall.to_plotly_json(),
+                "scarcity_plot_3": fig_scarcity_f1.to_plotly_json(),
             }
         )
 
