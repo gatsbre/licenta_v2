@@ -173,23 +173,28 @@ def get_robustness_plots(models, nr_users, rating, comparison_method, k):
 
 
 @app.route(
-    "/scarcity/get_plots/<model>/<model_feeding_percent>/<comparison_method>/<k>",
+    "/scarcity/get_plots/<models>/<model_feeding_rate>/<comparison_method>/<k>",
     methods=["GET"],
 )
-def get_scarcity_plots(model, model_feeding_percent, comparison_method, k=10):
+def get_scarcity_plots(models, model_feeding_rate, comparison_method, k=10):
+    selected_models = models.split(",")
+    print(selected_models)
+
     if comparison_method == "mae_rmse":
         mae_to_plot, rmse_to_plot = utils.get_plots(
-            selected_models=model,
+            selected_models=selected_models,
             function=utils.get_scarcity_mae_rmse,
             comparison_method=comparison_method,
-            model_feeding_percent=model_feeding_percent,
+            model_feeding_rate=model_feeding_rate,
         )
 
         fig_scarcity_mae = go.Figure(data=mae_to_plot)
         fig_scarcity_mae.update_layout(title="Scarcity MAE")
+        fig_scarcity_mae.update_yaxes(type="log")
 
         fig_scarcity_rmse = go.Figure(data=rmse_to_plot)
         fig_scarcity_rmse.update_layout(title="Scarcity RMSE")
+        fig_scarcity_rmse.update_yaxes(type="log")
 
         return jsonify(
             {
@@ -199,21 +204,24 @@ def get_scarcity_plots(model, model_feeding_percent, comparison_method, k=10):
         )
     elif comparison_method == "prf":
         precision_to_plot, recall_to_plot, f1_to_plot = utils.get_plots(
-            selected_models=model,
+            selected_models=selected_models,
             function=utils.get_scarcity_prf,
             comparison_method=comparison_method,
-            model_feeding_percent=model_feeding_percent,
+            model_feeding_rate=model_feeding_rate,
             k=k,
         )
 
         fig_scarcity_precision = go.Figure(data=precision_to_plot)
         fig_scarcity_precision.update_layout(title="Scarcity Precision")
+        fig_scarcity_precision.update_yaxes(type="log")
 
         fig_scarcity_recall = go.Figure(data=recall_to_plot)
         fig_scarcity_recall.update_layout(title="Scarcity Recall")
+        fig_scarcity_recall.update_yaxes(type="log")
 
         fig_scarcity_f1 = go.Figure(data=f1_to_plot)
         fig_scarcity_f1.update_layout(title="Scarcity F1")
+        fig_scarcity_f1.update_yaxes(type="log")
 
         return jsonify(
             {

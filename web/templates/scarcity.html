@@ -35,7 +35,10 @@
                                 Recall, F1</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="/robustness">Robustness</a>
+                            <a class="nav-link" href="/robustness">Robustness</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/scarcity">Scarcity</a>
                         </li>
                     </ul>
                 </div>
@@ -58,6 +61,10 @@
                     <div class="accordion-body">
                         <form id="evaluationForm" action="/robustness"
                             method="get">
+
+                            <label>Model:</label>
+                            
+                            <br>
 
                             <input type="checkbox" name="model" value="svd"
                                 id="svd">
@@ -88,16 +95,14 @@
                             <label for="co_clustering">CoClustering</label>
 
                             <br>
-
-                            <input type="checkbox" id="selectAll">
-                            <label for="selectAll">Select all models</label>
-                            
-                            <br>
                             <br>
 
-                            <label for="model_feeding_percent">Model feeding percent:</label>
-                            <input type="number" id="model_feeding_percent" name="model_feeding_percent" min="5" max="50" step="5" value="10">
-                            
+                            <label for="model_feeding_rate">Model feeding
+                                rate:</label>
+                            <input type="number" id="model_feeding_rate"
+                                name="model_feeding_rate" min="5" max="50"
+                                step="5" value="10">
+
                             <br>
                             <br>
                             <label for="comparison_radio_group">Comparison
@@ -118,8 +123,8 @@
                             <br>
                             <div id="comparison_inputs">
                                 <label for="k">K</label>
-                            <input type="number" id="k" name="k" min="5" ,
-                                max="100" value="10">
+                                <input type="number" id="k" name="k" min="5" ,
+                                    max="100" value="10">
                             </div>
                             <br>
                             <br>
@@ -150,7 +155,7 @@
             try {
                 const comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
                 const modelsInPage = [...document.getElementsByName("model")];
-                const modelFeedingPercent = document.getElementById("model_feeding_percent").value
+                const modelFeedingPercent = document.getElementById("model_feeding_rate").value
                 const inputsInPage = [...document.getElementsByTagName("input")]
                 const kValue = document.getElementById("k").value;
                 const disableAllInputs = (() => {
@@ -164,10 +169,10 @@
                 const response = await (async () => {
                     if (!filteredModelsInPage.length) {
 
-                        return await fetch(`/scarcity/get_plots/svd/${modelFeedingPercent}/${comparisonMethod}/${kValue}`);
+                        return await fetch(`/scarcity/get_plots/${modelsInPage.map((input) => input.value)}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`);
                     }
                     return await fetch(
-                        `/scarcity/get_plots/svd/${modelFeedingPercent}/${comparisonMethod}/${kValue}`
+                        `/scarcity/get_plots/${filteredModelsInPage}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`
                     );
                 })();
                 const data = await response.json();
@@ -183,15 +188,6 @@
                 return null;
             }
         };
-
-        document.getElementById("selectAll").addEventListener("change", (event) => {
-            const checkboxes = document.querySelectorAll(
-                'input[type="checkbox"][name="model"]'
-            );
-            for (let i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].checked = event.target.checked;
-            }
-        });
 
         const plotModels = async () => {
             const loadingSpinner = document.getElementById("loading-window");

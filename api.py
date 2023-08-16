@@ -177,7 +177,7 @@ def post_scarcity():
         random_state_value = int(request_data.get("random_state_value"))
         comparison_method = request_data.get("comparison_method")
         k_value = int(request_data.get("k"))
-        model_feeding_percent = int(request_data.get("model_feeding_percent"))
+        model_feeding_rate = int(request_data.get("model_feeding_rate"))
 
         if comparison_method is None:
             raise KeyError(
@@ -207,9 +207,9 @@ def post_scarcity():
     len_trainset_df = len(trainset_df)
 
     for i in range(
-        len_trainset_df // model_feeding_percent,
-        len_trainset_df // model_feeding_percent + len_trainset_df,
-        len_trainset_df // model_feeding_percent,
+        len_trainset_df // model_feeding_rate,
+        len_trainset_df // model_feeding_rate + len_trainset_df,
+        len_trainset_df // model_feeding_rate,
     ):
         partial_trainset = Dataset.load_from_df(trainset_df.head(i), reader)
         partial_trainset = partial_trainset.build_full_trainset()

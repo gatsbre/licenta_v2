@@ -24,7 +24,7 @@ def get_plots(
     nr_users=0,
     rating=0,
     comparison_method="",
-    model_feeding_percent=0,
+    model_feeding_rate=0,
 ):
     plots = []
 
@@ -33,40 +33,42 @@ def get_plots(
     )  # the interval of the random_state
 
     # scarcity
-    if model_feeding_percent:
+    if model_feeding_rate:
         if comparison_method == "mae_rmse":
-            for i, trace in enumerate(
-                function(
-                    selected_models,
-                    random_state_value,
-                    comparison_method,
-                    model_feeding_percent,
-                )
-            ):
-                try:
-                    if not plots[i % 2]:
-                        plots[i % 2] = []
-                except IndexError:
-                    plots.append([])
-                plots[i % 2].append(trace)
+            for model_name in selected_models:
+                for i, trace in enumerate(
+                    function(
+                        model_name,
+                        random_state_value,
+                        comparison_method,
+                        model_feeding_rate,
+                    )
+                ):
+                    try:
+                        if not plots[i % 2]:
+                            plots[i % 2] = []
+                    except IndexError:
+                        plots.append([])
+                    plots[i % 2].append(trace)
         elif comparison_method == "prf":
-            for i, trace in enumerate(
-                function(
-                    selected_models,
-                    random_state_value,
-                    comparison_method,
-                    model_feeding_percent,
-                )
-            ):
-                try:
-                    if not plots[i % 3]:
-                        plots[i % 3] = []
-                except IndexError:
-                    plots.append([])
-                plots[i % 3].append(trace)
+            for model_name in selected_models:
+                for i, trace in enumerate(
+                    function(
+                        model_name,
+                        random_state_value,
+                        comparison_method,
+                        model_feeding_rate,
+                    )
+                ):
+                    try:
+                        if not plots[i % 3]:
+                            plots[i % 3] = []
+                    except IndexError:
+                        plots.append([])
+                    plots[i % 3].append(trace)
 
     # precision, recall, f1
-    if k and not (nr_users and rating or model_feeding_percent):
+    if k and not (nr_users and rating or model_feeding_rate):
         for model_name in selected_models:
             for i, score_bar in enumerate(function(model_name, random_state_value, k)):
                 try:
@@ -103,7 +105,7 @@ def get_plots(
                         plots.append([])
                     plots[i % 3].append(score_bar)
     # mae, rmse
-    elif model_feeding_percent == 0:
+    elif model_feeding_rate == 0:
         for model_name in selected_models:
             for i, score_bar in enumerate(function(model_name, random_state_value)):
                 try:
@@ -419,13 +421,13 @@ def get_scarcity_mae_rmse(
     model_name,
     random_state_value,
     comparison_method="mae_rmse",
-    model_feeding_percent=10,
+    model_feeding_rate=10,
 ):
     scarcity_mae_rmse_data = {
         "model_name": model_name,
         "random_state_value": random_state_value,
         "comparison_method": comparison_method,
-        "model_feeding_percent": model_feeding_percent,
+        "model_feeding_rate": model_feeding_rate,
         "k": 0,
     }
 
@@ -443,8 +445,8 @@ def get_scarcity_mae_rmse(
         rmse_list.append(step["rmse_score"])
         nr_items_list.append(step["nr_items"])
 
-    mae_trace = go.Scatter(x=nr_items_list, y=mae_list, name="MAE")
-    rmse_trace = go.Scatter(x=nr_items_list, y=rmse_list, name="RMSE")
+    mae_trace = go.Scatter(x=nr_items_list, y=mae_list, name=f"{model_name}")
+    rmse_trace = go.Scatter(x=nr_items_list, y=rmse_list, name=f"{model_name}")
 
     return mae_trace, rmse_trace
 
@@ -453,14 +455,14 @@ def get_scarcity_prf(
     model_name,
     random_state_value,
     comparison_method="prf",
-    model_feeding_percent=10,
+    model_feeding_rate=10,
     k_value=10,
 ):
     scarcity_prf_data = {
         "model_name": model_name,
         "random_state_value": random_state_value,
         "comparison_method": comparison_method,
-        "model_feeding_percent": model_feeding_percent,
+        "model_feeding_rate": model_feeding_rate,
         "k": k_value,
     }
 
@@ -480,9 +482,11 @@ def get_scarcity_prf(
         f1_list.append(step["f1_score"])
         nr_items_list.append(step["nr_items"])
 
-    precision_trace = go.Scatter(x=nr_items_list, y=precision_list, name="Precision")
-    recall_trace = go.Scatter(x=nr_items_list, y=recall_list, name="Recall")
-    f1_trace = go.Scatter(x=nr_items_list, y=f1_list, name="F1")
+    precision_trace = go.Scatter(
+        x=nr_items_list, y=precision_list, name=f"{model_name}"
+    )
+    recall_trace = go.Scatter(x=nr_items_list, y=recall_list, name=f"{model_name}")
+    f1_trace = go.Scatter(x=nr_items_list, y=f1_list, name=f"{model_name}")
 
     return precision_trace, recall_trace, f1_trace
 
