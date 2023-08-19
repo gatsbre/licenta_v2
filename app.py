@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify
 from plotly import graph_objects as go
 import utils
+import math
 
 app = Flask(
     __name__,
@@ -44,21 +45,37 @@ def get_mae_rmse_plots(models):
     )
 
     fig_mae = go.Figure(data=mae_to_plot)
-    fig_mae.update_layout(title="Eroarea medie absoluta (MAE)", barmode="group")
+    fig_mae.update_layout(
+        title="Eroarea medie absoluta (MAE)",
+        barmode="group",
+        yaxis_range=[
+            math.log10(min(mae_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
+            math.log10(max(mae_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.02),
+        ],
+    )
+    fig_mae.update_yaxes(type="log")
 
     fig_rmse = go.Figure(data=rmse_to_plot)
     fig_rmse.update_layout(
-        title="Radacina erorii mediei patratice (RMSE)", barmode="group"
+        title="Radacina erorii mediei patratice (RMSE)",
+        barmode="group",
+        yaxis_range=[
+            math.log10(min(rmse_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
+            math.log10(max(rmse_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.02),
+        ],
     )
+    fig_rmse.update_yaxes(type="log")
 
     fig_time = go.Figure(data=time_to_plot)
     fig_time.update_layout(
         title="Timpul de antrenare si de predictie a modelelor",
         barmode="group",
-        yaxis=dict(
-            range=(0, max(time_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.2)
-        ),
+        yaxis_range=[
+            math.log10(min(time_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
+            math.log10(max(time_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.6),
+        ],
     )
+    fig_time.update_yaxes(type="log")
 
     return jsonify(
         {
@@ -81,28 +98,37 @@ def get_precision_recall_f1_plots(models, k_value):
     fig_precision.update_layout(
         title="Precision",
         barmode="group",
-        yaxis=dict(
-            range=(0, max(precision_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.2)
-        ),
+        yaxis_range=[
+            math.log10(min(precision_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
+            math.log10(max(precision_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.02),
+        ],
+    )
+
+    fig_precision.update_yaxes(
+        type="log",
     )
 
     fig_recall = go.Figure(data=recall_to_plot)
     fig_recall.update_layout(
         title="Recall",
         barmode="group",
-        yaxis=dict(
-            range=(0, max(recall_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.2)
-        ),
+        yaxis_range=[
+            math.log10(min(recall_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
+            math.log10(max(recall_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.02),
+        ],
     )
-    # fig_recall.update_yaxes(type="log")
+    fig_recall.update_yaxes(type="log")
 
     fig_f1 = go.Figure(data=f1_to_plot)
     fig_f1.update_layout(
         title="F1",
         barmode="group",
-        yaxis=dict(range=(0, max(f1_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.2)),
+        yaxis_range=[
+            math.log10(min(f1_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
+            math.log10(max(f1_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.02),
+        ],
     )
-    # fig_f1.update_yaxes(type="log")
+    fig_f1.update_yaxes(type="log")
 
     return jsonify(
         {
@@ -131,10 +157,26 @@ def get_robustness_plots(models, nr_users, rating, comparison_method, k):
         )
 
         fig_robustness_mae = go.Figure(data=mae_to_plot)
-        fig_robustness_mae.update_layout(title="Robustness MAE", barmode="group")
+        fig_robustness_mae.update_layout(
+            title="Robustness MAE",
+            barmode="group",
+            yaxis_range=[
+                math.log10(min(mae_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
+                math.log10(max(mae_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.02),
+            ],
+        )
+        fig_robustness_mae.update_yaxes(type="log")
 
         fig_robustness_rmse = go.Figure(data=rmse_to_plot)
-        fig_robustness_rmse.update_layout(title="Robustness RMSE", barmode="group")
+        fig_robustness_rmse.update_layout(
+            title="Robustness RMSE",
+            barmode="group",
+            yaxis_range=[
+                math.log10(min(rmse_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
+                math.log10(max(rmse_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.02),
+            ],
+        )
+        fig_robustness_rmse.update_yaxes(type="log")
 
         return jsonify(
             {
@@ -154,16 +196,43 @@ def get_robustness_plots(models, nr_users, rating, comparison_method, k):
 
         fig_robustness_precision = go.Figure(data=precision_to_plot)
         fig_robustness_precision.update_layout(
-            title="Robustness Precision", barmode="group"
+            title="Robustness Precision",
+            barmode="group",
+            yaxis_range=[
+                math.log10(
+                    min(precision_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98
+                ),
+                math.log10(
+                    max(precision_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.02
+                ),
+            ],
         )
         fig_robustness_precision.update_yaxes(type="log")
 
         fig_robustness_recall = go.Figure(data=recall_to_plot)
-        fig_robustness_recall.update_layout(title="Robustness Recall", barmode="group")
+        fig_robustness_recall.update_layout(
+            title="Robustness Recall",
+            barmode="group",
+            yaxis_range=[
+                math.log10(
+                    min(recall_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98
+                ),
+                math.log10(
+                    max(recall_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.02
+                ),
+            ],
+        )
         fig_robustness_recall.update_yaxes(type="log")
 
         fig_robustness_f1 = go.Figure(data=f1_to_plot)
-        fig_robustness_f1.update_layout(title="Robustness F1", barmode="group")
+        fig_robustness_f1.update_layout(
+            title="Robustness F1",
+            barmode="group",
+            yaxis_range=[
+                math.log10(min(f1_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
+                math.log10(max(f1_to_plot, key=lambda bar: bar["y"])["y"][0] * 1.02),
+            ],
+        )
         fig_robustness_f1.update_yaxes(type="log")
 
         return jsonify(
@@ -214,7 +283,9 @@ def get_scarcity_plots(models, model_feeding_rate, comparison_method, k=10):
         )
 
         fig_scarcity_precision = go.Figure(data=precision_to_plot)
-        fig_scarcity_precision.update_layout(title="Scarcity Precision")
+        fig_scarcity_precision.update_layout(
+            title="Scarcity Precision",
+        )
         fig_scarcity_precision.update_yaxes(type="log")
 
         fig_scarcity_recall = go.Figure(data=recall_to_plot)

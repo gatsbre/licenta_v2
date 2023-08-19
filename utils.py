@@ -136,8 +136,7 @@ def get_mae_rmse_score_bars(model_name, random_state_value):
         y=[mae_score],
         width=bar_width,
         text=[f"{model_name} <br> MAE: {round(mae_score, 6)}"],
-        textposition="inside",
-        insidetextanchor="middle",
+        textposition="outside",
         hoverinfo="text",
         hovertext=f"Model: {model_name} <br>MAE: {mae_score}",
     )
@@ -147,8 +146,7 @@ def get_mae_rmse_score_bars(model_name, random_state_value):
         y=[rmse_score],
         width=bar_width,
         text=[f"{model_name} <br> RMSE: {round(rmse_score, 6)}"],
-        textposition="inside",
-        insidetextanchor="middle",
+        textposition="outside",
         hoverinfo="text",
         hovertext=f"Model: {model_name} <br>RMSE: {rmse_score}",
     )
@@ -191,7 +189,6 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
         width=bar_width,
         text=[f"{model_name} <br> Precision: {round(precision_score, 6)}"],
         textposition="outside",
-        # insidetextanchor="middle",
         hoverinfo="text",
         hovertext=f"Model: {model_name} <br>Precision: {precision_score}",
     )
@@ -202,7 +199,6 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
         width=bar_width,
         text=[f"{model_name} <br> Recall: {round(recall_score, 6)}"],
         textposition="outside",
-        # insidetextanchor="middle",
         hoverinfo="text",
         hovertext=f"Model: {model_name} <br>Recall: {recall_score}",
     )
@@ -213,7 +209,6 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
         width=bar_width,
         text=[f"{model_name} <br> F1: {round(f1_score, 6)}"],
         textposition="outside",
-        # insidetextanchor="middle",
         hoverinfo="text",
         hovertext=f"Model: {model_name} <br>F1: {round(f1_score, 6)}",
     )
@@ -265,8 +260,7 @@ def get_robustness_score_bars(
             text=[
                 f"{model_name} <br>After adding users <br> MAE: {round(robustness_mae_score, 6)}"
             ],
-            textposition="inside",
-            insidetextanchor="middle",
+            textposition="outside",
             hoverinfo="text",
             hovertext=f"Model: {model_name} <br>After adding users <br>MAE: {robustness_mae_score}",
         )
@@ -278,8 +272,7 @@ def get_robustness_score_bars(
             text=[
                 f"{model_name} <br>After adding users <br> RMSE: {round(robustness_rmse_score, 6)}"
             ],
-            textposition="inside",
-            insidetextanchor="middle",
+            textposition="outside",
             hoverinfo="text",
             hovertext=f"Model: {model_name} <br>After adding users <br>RMSE: {robustness_rmse_score}",
         )
@@ -292,8 +285,7 @@ def get_robustness_score_bars(
             text=[
                 f"{model_name} <br>Before adding users <br> Base MAE: {round(base_mae_score, 6)}"
             ],
-            textposition="inside",
-            insidetextanchor="middle",
+            textposition="outside",
             hoverinfo="text",
             hovertext=f"Model: {model_name} <br>Before adding users <br>MAE: {base_mae_score}",
         )
@@ -305,8 +297,7 @@ def get_robustness_score_bars(
             text=[
                 f"{model_name} <br>Before adding users <br> Base RMSE: {round(base_rmse_score, 6)}"
             ],
-            textposition="inside",
-            insidetextanchor="middle",
+            textposition="outside",
             hoverinfo="text",
             hovertext=f"Model: {model_name} <br>Before adding users <br>RMSE: {base_rmse_score}",
         )
@@ -333,8 +324,7 @@ def get_robustness_score_bars(
             text=[
                 f"{model_name} <br>After adding users <br> Precision: {round(robustness_precision_score, 6)}"
             ],
-            textposition="inside",
-            insidetextanchor="middle",
+            textposition="outside",
             hoverinfo="text",
             hovertext=f"Model: {model_name} <br>After adding users <br>Precision: {robustness_precision_score}",
         )
@@ -346,8 +336,7 @@ def get_robustness_score_bars(
             text=[
                 f"{model_name} <br>After adding users <br> Recall: {round(robustness_recall_score, 6)}"
             ],
-            textposition="inside",
-            insidetextanchor="middle",
+            textposition="outside",
             hoverinfo="text",
             hovertext=f"Model: {model_name} <br>After adding users <br>Recall: {robustness_recall_score}",
         )
@@ -360,8 +349,7 @@ def get_robustness_score_bars(
             text=[
                 f"{model_name} <br>After adding users <br> F1: {round(robustness_f1_score, 6)}"
             ],
-            textposition="inside",
-            insidetextanchor="middle",
+            textposition="outside",
             hoverinfo="text",
             hovertext=f"Model: {model_name} <br>After adding users <br>F1: {robustness_f1_score}",
         )
@@ -374,8 +362,7 @@ def get_robustness_score_bars(
             text=[
                 f"{model_name} <br>Before adding users <br> Base Precision: {round(base_precision_score, 6)}"
             ],
-            textposition="inside",
-            insidetextanchor="middle",
+            textposition="outside",
             hoverinfo="text",
             hovertext=f"Model: {model_name} <br>Before adding users <br>Precision: {base_precision_score}",
         )
@@ -387,8 +374,7 @@ def get_robustness_score_bars(
             text=[
                 f"{model_name} <br>Before adding users <br> Base Recall: {round(base_recall_score, 6)}"
             ],
-            textposition="inside",
-            insidetextanchor="middle",
+            textposition="outside",
             hoverinfo="text",
             hovertext=f"Model: {model_name} <br>Before adding users <br>Recall: {base_recall_score}",
         )
@@ -401,8 +387,7 @@ def get_robustness_score_bars(
             text=[
                 f"{model_name} <br>Before adding users <br> Base Recall: {round(base_f1_score, 6)}"
             ],
-            textposition="inside",
-            insidetextanchor="middle",
+            textposition="outside",
             hoverinfo="text",
             hovertext=f"Model: {model_name} <br>Before adding users <br>Recall: {base_f1_score}",
         )
