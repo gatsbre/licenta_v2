@@ -2,55 +2,52 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <title>RSE: MAE, RMSE</title>
+<head>
+  <title>RSE: MAE, RMSE</title>
 
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="/bootstrap/js/bootstrap.js"></script>
-    <script src="/scripts/commonScripts.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="/bootstrap/js/bootstrap.js"></script>
+  <script src="/scripts/commonScripts.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="/css/styles.css">
-    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css">
-  </head>
+  <link rel="stylesheet" type="text/css" href="/css/styles.css">
+  <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css">
+</head>
 
-  <body>
-    <div class="fixed-top">
+<body>
+  <div class="fixed-top">
     {%include 'navbar.html'%}
 
     <div class="accordion">
       <div class="accordion-item">
         <h2 class="accordion-header">
-          <button class="accordion-button collapsed bg-white text-dark"
-            type="button" data-bs-toggle="collapse"
-            data-bs-target="#collapseOne"
-            aria-expanded="true" aria-controls="collapseOne">
+          <button class="accordion-button collapsed bg-white text-dark" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
             Metric configuration
           </button>
         </h2>
-        <div id="collapseOne" class="accordion-collapse collapse"
-          data-bs-parent="#accordionExample">
+        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
           <div class="accordion-body">
             <form id="evaluationForm" action="/mae_rmse" method="get">
               {%include 'models.html'%}
-              <input type="submit" value="Evaluate" id="evaluate_button"
-                data-bs-toggle="collapse" data-bs-target="#collapseOne">
+              <input type="submit" value="Evaluate" id="evaluate_button" data-bs-toggle="collapse"
+                data-bs-target="#collapseOne">
             </form>
           </div>
         </div>
       </div>
     </div>
-    </div>
+  </div>
 
 
-    <div id="plots" style="display:block; padding-top:120px;
+  <div id="plots" style="display:block; padding-top:120px;
     padding-right:20px; padding-left:20px">
-      {%include 'loading-spinner.html'%}
-      <div id="mae-plot"></div>
-      <div id="rmse-plot"></div>
-      <div id="time-plot"></div>
-    </div>
+    {%include 'loading-spinner.html'%}
+    <div id="mae-plot"></div>
+    <div id="rmse-plot"></div>
+    <div id="time-plot"></div>
+  </div>
 
-    <script>
+  <script>
     const fetchModels = async () => {
       try {
         const modelsInPage = [...document.getElementsByName("model")];
@@ -123,6 +120,6 @@
         await plotModels();
       });
   </script>
-  </body>
+</body>
 
 </html>
