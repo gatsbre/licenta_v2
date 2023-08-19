@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>RSE: Scarcity</title>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.js"></script>
+    <script src="/scripts/toggleComparisonInputs.js"></script>
+    <script src="/scripts/commonScripts.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css">
+</head>
+
+<body>
+    <div class="fixed-top">
+        {% include 'navbar.html'%}
+
+    <div class="accordion">
+        <div class="accordion-item ">
+            <h2 class="accordion-header bg-dark">
+                <button class="accordion-button collapsed bg-white
+                        text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                    aria-expanded="false" aria-controls="collapseOne">
+                    Metric configuration
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <form id="evaluationForm" action="/robustness" method="get">
+
+                        {%include 'models.html'%}
+
+                        <label for="model_feeding_rate">Model feeding
+                            rate:</label>
+                        <input type="number" id="model_feeding_rate" name="model_feeding_rate" min="5" max="50" step="5"
+                            value="10">
+
+                        {%include 'comparison.html'%}
+                        <input type="submit" value="Evaluate" id="evaluate_button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+    <div id="plots" style="display:block; padding-top:120px;
+    padding-right:20px; padding-left:20px">
+        {% include 'loading-spinner.html'%}
+        <div id="scarcity-plot-1"></div>
+        <div id="scarcity-plot-2"></div>
+        <div id="scarcity-plot-3"></div>
+    </div>
+
+    <script>
+        const fetchModels = async () => {
+            try {
+                const comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
+                const modelsInPage = [...document.getElementsByName("model")];
+                const modelFeedingPercent = document.getElementById("model_feeding_rate").value
+                const inputsInPage = [...document.getElementsByTagName("input")]
+                const kValue = document.getElementById("k").value;
+                const disableAllInputs = (() => {
+                    inputsInPage.map((input) => input.disabled = true)
+                })();
+                const filteredModelsInPage = (() => {
+                    return modelsInPage
+                        .filter((input) => !!input.checked)
+                        .map((input) => input.value);
+                })();
+                const response = await (async () => {
+                    if (!filteredModelsInPage.length) {
+
+                        return await fetch(`/scarcity/get_plots/${modelsInPage.map((input) => input.value)}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`);
+                    }
+                    return await fetch(
+                        `/scarcity/get_plots/${filteredModelsInPage}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`
+                    );
+                })();
+                const data = await response.json();
+                const enableAllInputs = (() => {
+                    inputsInPage.map((input) => input.disabled = false)
+                })();
+                return data;
+            } catch (error) {
+                console.error("Error fetching plot data:", error);
+                const enableAllInputs = (() => {
+                    inputsInPage.map((input) => input.disabled = false)
+                })();
+                return null;
+            }
+        };
+
+        const plotModels = async () => {
+            const loadingSpinner = document.getElementById("loading-window");
+            const comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
+            loadingSpinner.style.display = "block";
+
+            const data = await fetchModels();
+
+            if (!data) {
+                loadingSpinner.style.display = "none";
+                return;
+            }
+
+            loadingSpinner.style.display = "none";
+
+            Plotly.newPlot("scarcity-plot-1", data.scarcity_plot_1);
+            Plotly.newPlot("scarcity-plot-2", data.scarcity_plot_2);
+            if (comparisonMethod == "prf") {
+                document.getElementById("scarcity-plot-3").style.display = "block";
+                Plotly.newPlot("scarcity-plot-3", data.scarcity_plot_3);
+            }
+            else if (comparisonMethod == "mae_rmse")
+                document.getElementById("scarcity-plot-3").style.display = "none";
+        };
+
+        window.addEventListener("load", async () => {
+            setActiveMenu('scarcity');
+            await plotModels();
+        });
+
+        document
+            .getElementById("evaluate_button")
+            .addEventListener("click", async (event) => {
+                event.preventDefault();
+                await plotModels();
+            });
+    </script>
+</body>
+
+</html>

@@ -12,27 +12,27 @@ app = Flask(
 
 @app.route("/")
 def show_main():
-    return render_template("mae_rmse.html")
+    return render_template("/pages/mae_rmse.html")
 
 
 @app.route("/mae_rmse")
 def show_mae_rmse_graph():
-    return render_template("mae_rmse.html")
+    return render_template("/pages/mae_rmse.html")
 
 
 @app.route("/precision_recall_f1")
 def show_precision_f1_recall():
-    return render_template("precision_recall_f1.html")
+    return render_template("/pages/precision_recall_f1.html")
 
 
 @app.route("/robustness")
 def show_robustness_graph():
-    return render_template("robustness.html")
+    return render_template("/pages/robustness.html")
 
 
 @app.route("/scarcity")
 def show_scarcity_graph():
-    return render_template("scarcity.html")
+    return render_template("/pages/scarcity.html")
 
 
 @app.route("/mae_rmse/get_plots/<models>/", methods=["GET"])
@@ -156,12 +156,15 @@ def get_robustness_plots(models, nr_users, rating, comparison_method, k):
         fig_robustness_precision.update_layout(
             title="Robustness Precision", barmode="group"
         )
+        fig_robustness_precision.update_yaxes(type="log")
 
         fig_robustness_recall = go.Figure(data=recall_to_plot)
         fig_robustness_recall.update_layout(title="Robustness Recall", barmode="group")
+        fig_robustness_recall.update_yaxes(type="log")
 
         fig_robustness_f1 = go.Figure(data=f1_to_plot)
         fig_robustness_f1.update_layout(title="Robustness F1", barmode="group")
+        fig_robustness_f1.update_yaxes(type="log")
 
         return jsonify(
             {
@@ -178,7 +181,6 @@ def get_robustness_plots(models, nr_users, rating, comparison_method, k):
 )
 def get_scarcity_plots(models, model_feeding_rate, comparison_method, k=10):
     selected_models = models.split(",")
-    print(selected_models)
 
     if comparison_method == "mae_rmse":
         mae_to_plot, rmse_to_plot = utils.get_plots(
