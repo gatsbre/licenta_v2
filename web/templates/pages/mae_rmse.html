@@ -50,6 +50,7 @@
   <script>
     const fetchModels = async () => {
       try {
+        const selectedDataset = document.getElementById("select_dataset").value;
         const modelsInPage = [...document.getElementsByName("model")];
         const inputsInPage = [...document.getElementsByTagName("input")]
         const disableAllInputs = (() => {
@@ -65,10 +66,10 @@
         })();
         const response = await (async () => {
           if (!filteredModelsInPage.length) {
-            return await fetch("/mae_rmse/get_plots/");
+            return await fetch(`/mae_rmse/get_plots/${selectedDataset}`);
           }
           return await fetch(
-            `/mae_rmse/get_plots/${filteredModelsInPage.join(",")}/`
+            `/mae_rmse/get_plots/${selectedDataset}/${filteredModelsInPage.join(",")}/`
           );
         })();
         const data = await response.json();

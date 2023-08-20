@@ -25,6 +25,7 @@ def get_plots(
     rating=0,
     comparison_method="",
     model_feeding_rate=0,
+    dataset="ml-100k",
 ):
     plots = []
 
@@ -107,7 +108,9 @@ def get_plots(
     # mae, rmse
     elif model_feeding_rate == 0:
         for model_name in selected_models:
-            for i, score_bar in enumerate(function(model_name, random_state_value)):
+            for i, score_bar in enumerate(
+                function(model_name, random_state_value, dataset)
+            ):
                 try:
                     if not plots[i]:
                         plots[i] = []
@@ -118,10 +121,14 @@ def get_plots(
     return plots
 
 
-def get_mae_rmse_score_bars(model_name, random_state_value):
+def get_mae_rmse_score_bars(model_name, random_state_value, dataset):
     bar_width = 0.1
 
-    post_data = {"model_name": model_name, "random_state_value": random_state_value}
+    post_data = {
+        "model_name": model_name,
+        "random_state_value": random_state_value,
+        "dataset": dataset,
+    }
 
     response = requests.post("http://127.0.0.1:8000/api/v1/mae_rmse", json=post_data)
     response_data = response.json()
@@ -486,10 +493,8 @@ def get_top_k_percent(sorted_list, k):
     return top_k_percent
 
 
-def get_models():
+def get_models(potential_models):
     legal_models = ["svd", "knn", "baseline", "slope_one", "co_clustering"]
-
-    potential_models = request.args.getlist("model")
 
     selected_models = set(potential_models) & set(legal_models)
 
@@ -499,9 +504,7 @@ def get_models():
     return selected_models
 
 
-def get_k_value():
-    k_value = request.args.get("k")
-
+def get_k_value(k_value):
     if not k_value:
         k_value = 10
     else:
@@ -510,12 +513,19 @@ def get_k_value():
     return k_value
 
 
-def get_comparison_method():
+def get_comparison_method(comparison_method):
     legal_methods = ["mae_rmse", "precision_recall_f1"]
-
-    comparison_method = request.args.get("comparison_method")
 
     if comparison_method not in legal_methods:
         comparison_method = legal_methods[0]
 
     return comparison_method
+
+
+def get_dataset(potential_dataset):
+    legal_datasets = ["ml-100k", "ml-1m", "jester"]
+
+    if potential_dataset not in legal_datasets:
+        potential_dataset = legal_datasets[0]
+
+    return potential_dataset

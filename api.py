@@ -14,17 +14,23 @@ app = Flask(__name__)
 
 @app.route("/api/v1/mae_rmse", methods=["POST"])
 def post_mae_rmse_model():
-    request_data = request.json
+    try:
+        request_data = request.json
 
-    model_name = request_data.get("model_name")
-    random_state_value = int(request_data.get("random_state_value"))
+        model_name = request_data.get("model_name")
+        random_state_value = int(request_data.get("random_state_value"))
+        selected_dataset = request_data.get("dataset")
 
-    data = Dataset.load_builtin("ml-100k")
+    except Exception as e:
+        return jsonify({"Error": str(e)}), 400
+
+    model = utils.get_model_instance(model_name)
+    selected_dataset = utils.get_dataset(selected_dataset)
+
+    data = Dataset.load_builtin()
     train_data, test_data = train_test_split(
         data, train_size=0.8, random_state=random_state_value
     )
-
-    model = utils.get_model_instance(model_name)
 
     start_time = time.time()
     model.fit(train_data)

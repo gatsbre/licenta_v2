@@ -36,12 +36,12 @@ def show_scarcity_graph():
     return render_template("/pages/scarcity.html")
 
 
-@app.route("/mae_rmse/get_plots/<models>/", methods=["GET"])
-def get_mae_rmse_plots(models):
+@app.route("/mae_rmse/get_plots/<dataset>/<models>/", methods=["GET"])
+def get_mae_rmse_plots(dataset, models):
     selected_models = models.split(",")
 
     mae_to_plot, rmse_to_plot, time_to_plot = utils.get_plots(
-        selected_models, utils.get_mae_rmse_score_bars
+        selected_models, utils.get_mae_rmse_score_bars, dataset=dataset
     )
 
     fig_mae = go.Figure(data=mae_to_plot)
