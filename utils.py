@@ -71,7 +71,9 @@ def get_plots(
     # precision, recall, f1
     if k and not (nr_users and rating or model_feeding_rate):
         for model_name in selected_models:
-            for i, score_bar in enumerate(function(model_name, random_state_value, k)):
+            for i, score_bar in enumerate(
+                function(model_name, random_state_value, dataset, k)
+            ):
                 try:
                     if not plots[i]:
                         plots[i] = []
@@ -171,12 +173,13 @@ def get_mae_rmse_score_bars(model_name, random_state_value, dataset):
     return mae_bar, rmse_bar, time_bar
 
 
-def get_precision_recall_f1_score_bars(model_name, random_state_value, k):
+def get_precision_recall_f1_score_bars(model_name, random_state_value, dataset, k):
     bar_width = 0.1
 
     post_data = {
         "model_name": model_name,
         "random_state_value": random_state_value,
+        "dataset": dataset,
         "k": k,
     }
 

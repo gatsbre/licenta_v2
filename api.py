@@ -21,13 +21,13 @@ def post_mae_rmse_model():
         random_state_value = int(request_data.get("random_state_value"))
         selected_dataset = request_data.get("dataset")
 
-    except Exception as e:
-        return jsonify({"Error": str(e)}), 400
+    except Exception as exception:
+        return jsonify({"Error": str(exception)}), 400
 
     model = utils.get_model_instance(model_name)
     selected_dataset = utils.get_dataset(selected_dataset)
 
-    data = Dataset.load_builtin()
+    data = Dataset.load_builtin(selected_dataset)
     train_data, test_data = train_test_split(
         data, train_size=0.8, random_state=random_state_value
     )
@@ -52,13 +52,23 @@ def post_mae_rmse_model():
 
 @app.route("/api/v1/precision_recall_f1", methods=["POST"])
 def post_precision_recall_f1_model_k():
-    request_data = request.json
+    try:
+        request_data = request.json
 
-    model_name = request_data.get("model_name")
-    random_state_value = int(request_data.get("random_state_value"))
-    k = int(request_data.get("k"))
+        model_name = request_data.get("model_name")
+        random_state_value = int(request_data.get("random_state_value"))
+        k = int(request_data.get("k"))
+        selected_dataset = request_data.get("dataset")
 
-    data = Dataset.load_builtin("ml-100k")
+    except Exception as exception:
+        return jsonify({"Error": str(exception)}), 400
+
+    selected_dataset = utils.get_dataset(selected_dataset)
+
+    print(selected_dataset)
+
+    data = Dataset.load_builtin(selected_dataset)
+
     train_data, test_data = train_test_split(
         data, train_size=0.8, random_state=random_state_value
     )

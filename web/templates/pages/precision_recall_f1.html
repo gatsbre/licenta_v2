@@ -56,6 +56,7 @@
     <script>
         const fetchModels = async () => {
             try {
+                const selectedDataset = document.getElementById("select_dataset").value; 
                 const modelsInPage = [...document.getElementsByName("model")];
                 const kValue = document.getElementById("k").value
                 const inputsInPage = [...document.getElementsByTagName("input")]
@@ -72,10 +73,10 @@
                 })();
                 const response = await (async () => {
                     if (!filteredModelsInPage.length) {
-                        return await fetch(`/precision_recall_f1/get_plots/${kValue}/`);
+                        return await fetch(`/precision_recall_f1/get_plots/${selectedDataset}/${kValue}/`);
                     }
                     return await fetch(
-                        `/precision_recall_f1/get_plots/${kValue}/${filteredModelsInPage.join(",")}/`
+                        `/precision_recall_f1/get_plots/${selectedDataset}/${kValue}/${filteredModelsInPage.join(",")}/`
                     );
                 })();
                 const data = await response.json();

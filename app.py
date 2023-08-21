@@ -86,12 +86,17 @@ def get_mae_rmse_plots(dataset, models):
     )
 
 
-@app.route("/precision_recall_f1/get_plots/<int:k_value>/<models>/", methods=["GET"])
-def get_precision_recall_f1_plots(models, k_value):
+@app.route(
+    "/precision_recall_f1/get_plots/<dataset>/<int:k_value>/<models>/", methods=["GET"]
+)
+def get_precision_recall_f1_plots(models, dataset, k_value):
     selected_models = models.split(",")
 
     precision_to_plot, recall_to_plot, f1_to_plot = utils.get_plots(
-        selected_models, utils.get_precision_recall_f1_score_bars, k_value
+        selected_models,
+        utils.get_precision_recall_f1_score_bars,
+        k=k_value,
+        dataset=dataset,
     )
 
     fig_precision = go.Figure(data=precision_to_plot)
