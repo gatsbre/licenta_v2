@@ -61,6 +61,7 @@
     <script>
         const fetchModels = async () => {
             try {
+                const selectedDataset = document.getElementById("select_dataset").value;
                 const comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
                 const modelsInPage = [...document.getElementsByName("model")];
                 const nrUsers = document.getElementById("nr_users").value
@@ -88,10 +89,10 @@
 
                         const randomModels = randomIndexes.map(index => modelsInPage[index].value);
 
-                        return await fetch(`/robustness/get_plots/${nrUsers}/${rating}/${comparisonMethod}/${kValue}/${randomModels.join(",")}`);
+                        return await fetch(`/robustness/get_plots/${selectedDataset}/${nrUsers}/${rating}/${comparisonMethod}/${kValue}/${randomModels.join(",")}`);
                     }
                     return await fetch(
-                        `/robustness/get_plots/${nrUsers}/${rating}/${comparisonMethod}/${kValue}/${filteredModelsInPage.join(",")}`
+                        `/robustness/get_plots/${selectedDataset}/${nrUsers}/${rating}/${comparisonMethod}/${kValue}/${filteredModelsInPage.join(",")}`
                     );
                 })();
                 const data = await response.json();

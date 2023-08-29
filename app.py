@@ -145,10 +145,10 @@ def get_precision_recall_f1_plots(models, dataset, k_value):
 
 
 @app.route(
-    "/robustness/get_plots/<int:nr_users>/<float:rating>/<comparison_method>/<k>/<models>",
+    "/robustness/get_plots/<dataset>/<int:nr_users>/<float:rating>/<comparison_method>/<k>/<models>",
     methods=["GET"],
 )
-def get_robustness_plots(models, nr_users, rating, comparison_method, k):
+def get_robustness_plots(models, nr_users, rating, comparison_method, k, dataset):
     selected_models = models.split(",")
 
     if comparison_method == "mae_rmse":
@@ -159,6 +159,7 @@ def get_robustness_plots(models, nr_users, rating, comparison_method, k):
             rating=rating,
             comparison_method=comparison_method,
             k=k,
+            dataset=dataset,
         )
 
         fig_robustness_mae = go.Figure(data=mae_to_plot)
