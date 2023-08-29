@@ -1,6 +1,3 @@
-from utils import get_top_k_percent
-
-
 def precision_score(test_set, predictions, k=10):
     set_of_users = {user[0] for user in test_set}
     total_precision = 0
