@@ -2,7 +2,6 @@ from flask import jsonify, Flask, request
 from surprise import Dataset, Reader
 from surprise.model_selection import train_test_split
 from surprise.accuracy import rmse, mae
-from plotly import graph_objects as go
 
 import time
 import utils
