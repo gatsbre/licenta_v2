@@ -41,6 +41,7 @@ def get_plots(
                     function(
                         model_name,
                         random_state_value,
+                        dataset,
                         comparison_method,
                         model_feeding_rate,
                     )
@@ -57,6 +58,7 @@ def get_plots(
                     function(
                         model_name,
                         random_state_value,
+                        dataset,
                         comparison_method,
                         model_feeding_rate,
                     )
@@ -89,6 +91,7 @@ def get_plots(
                     random_state_value,
                     nr_users,
                     rating,
+                    dataset,
                     comparison_method,
                     k,
                 )
@@ -227,7 +230,13 @@ def get_precision_recall_f1_score_bars(model_name, random_state_value, dataset, 
 
 
 def get_robustness_score_bars(
-    model_name, random_state_value, nr_users, rating, comparison_method="mae_rmse", k=10
+    model_name,
+    random_state_value,
+    nr_users,
+    rating,
+    dataset,
+    comparison_method="mae_rmse",
+    k=10,
 ):
     bar_width = 0.1
 
@@ -238,12 +247,14 @@ def get_robustness_score_bars(
         "rating": rating,
         "comparison_method": comparison_method,
         "k": k,
+        "dataset": dataset,
     }
 
     base_post_data = {
         "model_name": model_name,
         "random_state_value": random_state_value,
         "k": k,
+        "dataset": dataset,
     }
 
     response = requests.post(
@@ -415,6 +426,7 @@ def get_robustness_score_bars(
 def get_scarcity_mae_rmse(
     model_name,
     random_state_value,
+    dataset,
     comparison_method="mae_rmse",
     model_feeding_rate=10,
 ):
@@ -424,6 +436,7 @@ def get_scarcity_mae_rmse(
         "comparison_method": comparison_method,
         "model_feeding_rate": model_feeding_rate,
         "k": 0,
+        "dataset": dataset,
     }
 
     response = requests.post(
@@ -449,6 +462,7 @@ def get_scarcity_mae_rmse(
 def get_scarcity_prf(
     model_name,
     random_state_value,
+    dataset,
     comparison_method="prf",
     model_feeding_rate=10,
     k_value=10,
@@ -459,6 +473,7 @@ def get_scarcity_prf(
         "comparison_method": comparison_method,
         "model_feeding_rate": model_feeding_rate,
         "k": k_value,
+        "dataset": dataset,
     }
 
     response = requests.post(

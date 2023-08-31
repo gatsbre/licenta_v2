@@ -89,7 +89,6 @@ def post_precision_recall_f1_model_k():
     return jsonify(response_data)
 
 
-# TODO: de adaugat dataseturi pentru robustness si scarcity
 @app.route("/api/v1/robustness", methods=["POST"])
 def post_robustness():
     try:
@@ -196,6 +195,7 @@ def post_scarcity():
         comparison_method = request_data.get("comparison_method")
         k_value = int(request_data.get("k"))
         model_feeding_rate = int(request_data.get("model_feeding_rate"))
+        selected_dataset = request_data.get("dataset")
 
         if comparison_method is None:
             raise KeyError(
@@ -209,8 +209,10 @@ def post_scarcity():
     except Exception as e:
         return jsonify({"Error": str(e)}), 400
 
+    selected_dataset = utils.get_dataset(selected_dataset)
+
     table = []
-    data = Dataset.load_builtin("ml-100k")
+    data = Dataset.load_builtin(selected_dataset)
 
     trainset, testset = train_test_split(
         data, train_size=0.8, random_state=random_state_value

@@ -60,6 +60,7 @@
     <script>
         const fetchModels = async () => {
             try {
+                const selectedDataset = document.getElementById("select_dataset").value;
                 const comparisonMethod = document.querySelector('input[name="comparison_method"]:checked').value;
                 const modelsInPage = [...document.getElementsByName("model")];
                 const modelFeedingPercent = document.getElementById("model_feeding_rate").value
@@ -76,10 +77,10 @@
                 const response = await (async () => {
                     if (!filteredModelsInPage.length) {
 
-                        return await fetch(`/scarcity/get_plots/${modelsInPage.map((input) => input.value)}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`);
+                        return await fetch(`/scarcity/get_plots/${selectedDataset}/${modelsInPage.map((input) => input.value)}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`);
                     }
                     return await fetch(
-                        `/scarcity/get_plots/${filteredModelsInPage}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`
+                        `/scarcity/get_plots/${selectedDataset}/${filteredModelsInPage}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`
                     );
                 })();
                 const data = await response.json();

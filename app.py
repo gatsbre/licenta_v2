@@ -251,10 +251,10 @@ def get_robustness_plots(models, nr_users, rating, comparison_method, k, dataset
 
 
 @app.route(
-    "/scarcity/get_plots/<models>/<model_feeding_rate>/<comparison_method>/<k>",
+    "/scarcity/get_plots/<dataset>/<models>/<model_feeding_rate>/<comparison_method>/<k>",
     methods=["GET"],
 )
-def get_scarcity_plots(models, model_feeding_rate, comparison_method, k=10):
+def get_scarcity_plots(dataset, models, model_feeding_rate, comparison_method, k=10):
     selected_models = models.split(",")
 
     if comparison_method == "mae_rmse":
@@ -263,6 +263,7 @@ def get_scarcity_plots(models, model_feeding_rate, comparison_method, k=10):
             function=utils.get_scarcity_mae_rmse,
             comparison_method=comparison_method,
             model_feeding_rate=model_feeding_rate,
+            dataset=dataset,
         )
 
         fig_scarcity_mae = go.Figure(data=mae_to_plot)
@@ -286,6 +287,7 @@ def get_scarcity_plots(models, model_feeding_rate, comparison_method, k=10):
             comparison_method=comparison_method,
             model_feeding_rate=model_feeding_rate,
             k=k,
+            dataset=dataset,
         )
 
         fig_scarcity_precision = go.Figure(data=precision_to_plot)
