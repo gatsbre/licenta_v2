@@ -46,7 +46,7 @@ def get_mae_rmse_plots(dataset, models):
 
     fig_mae = go.Figure(data=mae_to_plot)
     fig_mae.update_layout(
-        title="Eroarea medie absoluta (MAE)",
+        title="Mean Absolute Error",
         barmode="group",
         yaxis_range=[
             math.log10(min(mae_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
@@ -57,7 +57,7 @@ def get_mae_rmse_plots(dataset, models):
 
     fig_rmse = go.Figure(data=rmse_to_plot)
     fig_rmse.update_layout(
-        title="Radacina erorii mediei patratice (RMSE)",
+        title="Root Mean Squared Error",
         barmode="group",
         yaxis_range=[
             math.log10(min(rmse_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
@@ -68,7 +68,7 @@ def get_mae_rmse_plots(dataset, models):
 
     fig_time = go.Figure(data=time_to_plot)
     fig_time.update_layout(
-        title="Timpul de antrenare si de predictie a modelelor",
+        title="Model fitting and testing time",
         barmode="group",
         yaxis_range=[
             math.log10(min(time_to_plot, key=lambda bar: bar["y"])["y"][0] * 0.98),
