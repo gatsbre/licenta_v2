@@ -1,13 +1,13 @@
 .loading-window {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(254, 254, 254, 0.9);
-    border: 2px solid #ccc;
-    padding: 30px;
-    text-align: center;
-    z-index: 2;
-    width: 300px;
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(254, 254, 254, 0.9);
+  border: 2px solid #ccc;
+  padding: 30px;
+  text-align: center;
+  z-index: 2;
+  width: 300px;
 }
