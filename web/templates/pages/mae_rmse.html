@@ -27,10 +27,10 @@
         </h2>
         <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
           <div class="accordion-body">
-            <form id="evaluationForm" action="/mae_rmse" method="get">
+            <form id="evaluationForm" action="/mae_rmse" method="get" onchange="isFormValid()">
               {%include 'models.html'%}
               <input type="submit" value="Evaluate" id="evaluate_button" data-bs-toggle="collapse"
-                data-bs-target="#collapseOne">
+                data-bs-target="#collapseOne" disabled>
             </form>
           </div>
         </div>
@@ -86,15 +86,6 @@
       }
     };
 
-    document.getElementById("selectAll").addEventListener("change", (event) => {
-      const checkboxes = document.querySelectorAll(
-        'input[type="checkbox"][name="model"]'
-      );
-      for (let i = 0; i < checkboxes.length; i++) {
-        checkboxes[i].checked = event.target.checked;
-      }
-    });
-
     const plotModels = async () => {
       document.getElementById("loading-window").style.display = "block";
 
@@ -110,16 +101,12 @@
     };
 
     window.addEventListener("load", async () => {
-      setActiveMenu('mae_rmse')
+      setActiveMenu('mae_rmse');
       await plotModels();
+      isFormValid();
+      selectAll();
+      evaluateButton();
     });
-
-    document
-      .getElementById("evaluate_button")
-      .addEventListener("click", async (event) => {
-        event.preventDefault();
-        await plotModels();
-      });
   </script>
 </body>
 

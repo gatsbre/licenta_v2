@@ -28,14 +28,14 @@
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
-                        <form id="evaluationForm" action="/robustness" method="get">
+                        <form id="evaluationForm" action="/robustness" method="get" onchange="isFormValid()">
 
                             {%include 'models.html'%}
 
                             <label for="model_feeding_rate">Model feeding
                                 rate:</label>
                             <input type="number" id="model_feeding_rate" name="model_feeding_rate" min="5" max="50"
-                                step="5" value="10">
+                                step="5" value="10" required>
 
                             {%include 'comparison.html'%}
                             <input type="submit" value="Evaluate" id="evaluate_button" data-bs-toggle="collapse"
@@ -76,11 +76,21 @@
                 })();
                 const response = await (async () => {
                     if (!filteredModelsInPage.length) {
+                        const randomIndexes = [];
 
-                        return await fetch(`/scarcity/get_plots/${selectedDataset}/${modelsInPage.map((input) => input.value)}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`);
+                        while (randomIndexes.length < 2) {
+                            const randomIndex = Math.floor(Math.random() * modelsInPage.length);
+                            if (!randomIndexes.includes(randomIndex)) {
+                                randomIndexes.push(randomIndex);
+                            }
+                        }
+
+                        const randomModels = randomIndexes.map(index => modelsInPage[index].value);
+
+                        return await fetch(`/scarcity/get_plots/${selectedDataset}/${randomModels.join(',')}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`);
                     }
                     return await fetch(
-                        `/scarcity/get_plots/${selectedDataset}/${filteredModelsInPage}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`
+                        `/scarcity/get_plots/${selectedDataset}/${filteredModelsInPage.join(",")}/${modelFeedingPercent}/${comparisonMethod}/${kValue}`
                     );
                 })();
                 const data = await response.json();
@@ -124,14 +134,11 @@
         window.addEventListener("load", async () => {
             setActiveMenu('scarcity');
             await plotModels();
+            isFormValid();
+            toggleK();
+            selectAll();
+            evaluateButton();
         });
-
-        document
-            .getElementById("evaluate_button")
-            .addEventListener("click", async (event) => {
-                event.preventDefault();
-                await plotModels();
-            });
     </script>
 </body>
 
