@@ -38,7 +38,7 @@ def show_scarcity_graph():
 
 @app.route("/mae_rmse/get_plots/<dataset>/<models>/", methods=["GET"])
 def get_mae_rmse_plots(dataset, models):
-    selected_models = models.split(",")
+    selected_models = utils.validate_models(models.split(","))
 
     mae_to_plot, rmse_to_plot, time_to_plot = utils.get_plots(
         selected_models, utils.get_mae_rmse_score_bars, dataset=dataset
@@ -90,7 +90,7 @@ def get_mae_rmse_plots(dataset, models):
     "/precision_recall_f1/get_plots/<dataset>/<int:k_value>/<models>/", methods=["GET"]
 )
 def get_precision_recall_f1_plots(models, dataset, k_value):
-    selected_models = models.split(",")
+    selected_models = utils.validate_models(models.split(","))
 
     precision_to_plot, recall_to_plot, f1_to_plot = utils.get_plots(
         selected_models,
@@ -149,7 +149,7 @@ def get_precision_recall_f1_plots(models, dataset, k_value):
     methods=["GET"],
 )
 def get_robustness_plots(models, nr_users, rating, comparison_method, k, dataset):
-    selected_models = models.split(",")
+    selected_models = utils.validate_models(models.split(","))
 
     if comparison_method == "mae_rmse":
         mae_to_plot, rmse_to_plot = utils.get_plots(
@@ -255,7 +255,7 @@ def get_robustness_plots(models, nr_users, rating, comparison_method, k, dataset
     methods=["GET"],
 )
 def get_scarcity_plots(dataset, models, model_feeding_rate, comparison_method, k=10):
-    selected_models = models.split(",")
+    selected_models = utils.validate_models(models.split(","))
 
     if comparison_method == "mae_rmse":
         mae_to_plot, rmse_to_plot = utils.get_plots(

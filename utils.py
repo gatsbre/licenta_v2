@@ -1,6 +1,13 @@
 import requests
 import plotly.graph_objects as go
-from surprise import SVD, KNNBasic, BaselineOnly, SlopeOne, CoClustering
+from surprise import (
+    SVD,
+    KNNBasic,
+    BaselineOnly,
+    SlopeOne,
+    CoClustering,
+    NormalPredictor,
+)
 import random
 from flask import request
 
@@ -12,6 +19,7 @@ def get_model_instance(model_name):
         "baseline": lambda: BaselineOnly(),
         "slope_one": lambda: SlopeOne(),
         "co_clustering": lambda: CoClustering(),
+        # "normal_predictor": lambda: NormalPredictor(),
     }
 
     return model_factories[model_name]()
@@ -511,13 +519,20 @@ def get_top_k_percent(sorted_list, k):
     return top_k_percent
 
 
-def get_models(potential_models):
-    legal_models = ["svd", "knn", "baseline", "slope_one", "co_clustering"]
+def validate_models(potential_models):
+    legal_models = [
+        "svd",
+        "knn",
+        "baseline",
+        "slope_one",
+        "co_clustering",
+        # "normal_predictor",
+    ]
 
     selected_models = set(potential_models) & set(legal_models)
 
     if not selected_models:
-        selected_models = legal_models
+        selected_models = legal_models[0]
 
     return selected_models
 
